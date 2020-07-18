@@ -1,18 +1,19 @@
+
+
 class Game extends EventTarget{
     constructor(div, columnsCount, rowsCount){
         super();
-        this.gameField = div;
-        this.tickDuration = 200;
-        this.state = 'pause';
+        this.gameField = new GameField(columnsCount, rowsCount, div);
+        this.state = 'play';
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
         this.controls = new EventTarget();
 
-        this.playerDirection = {x: 0, y: -1};
-        this.player = [
-            {x:4, y:4},
-            {x:4, y:5},
-            {x:4, y:6},]
+        this.player = new Snake(this.gameField);
+
+        this.player.addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
+        this.player.addEventListener('Step', this.goThroughWalls.bind(this));
+        this.player.addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
 
         this.controls.addEventListener('Keyboard', (function(event){
             let key = event.detail.key;
@@ -27,14 +28,22 @@ class Game extends EventTarget{
                 }
 
                 this.dispatchEvent(new CustomEvent('StateChange', { detail: detail }));
+
+                if(this.state == 'play'){
+                    this.player.move();
+                } else {
+                    this.player.stop();
+                }
+
                 return;
             }
 
             switch(key){
-                case 'Left' : this.playerDirection = {x: -1, y: 0}; break;
-                case 'Right': this.playerDirection = {x: 1, y: 0}; break;
-                case 'Up'   : this.playerDirection = {x: 0, y: -1}; break;
-                case 'Down' : this.playerDirection = {x: 0, y: 1}; break;
+                case 'Left' : this.player.changeDirection({x: -1, y: 0}); break;
+                case 'Right': this.player.changeDirection({x: 1, y: 0}); break;
+                case 'Up'   : this.player.changeDirection({x: 0, y: -1}); break;
+                case 'Down' : this.player.changeDirection({x: 0, y: 1}); break;
+                case 'Num1' : this.player.addSegment(); break;
             }
         }).bind(this));
 
@@ -42,66 +51,38 @@ class Game extends EventTarget{
             console.log(`From ${event.detail.prevState} state To ${event.detail.curState} state`);
         });
 
-        this.gameField.style.width = columnsCount * 30;
-        this.gameField.style.height = rowsCount * 30;
-
-        for(let i = 0; i < this.player.length; i++){
-            let curSegment = this.player[i];
-
-            let newDiv = document.createElement('div');
-
-            newDiv.style.position = 'absolute';
-
-            newDiv.style.width = 30;
-            newDiv.style.height = 30;
-
-            newDiv.style.left = curSegment.x*30;
-            newDiv.style.top = curSegment.y*30;
-            newDiv.style.backgroundRepeat = 'none';
-            newDiv.style.backgroundSize = 'cover';
-
-            if(i == 0){
-                newDiv.style.backgroundImage = 'url(images/snakeHead.png)';
-            } else if(i == this.player.length - 1){
-                newDiv.style.backgroundImage = 'url(images/snakeTail.png)';
-            } else {
-                newDiv.style.backgroundImage = 'url(images/snakeBody1.png)';
-            }
-
-            curSegment.div = newDiv;
-
-            this.gameField.append(newDiv);
-        }
-
         document.onkeydown = this.keyPress.bind(this);
+        this.player.move();
 
-        setInterval(this.UpdateState.bind(this), this.tickDuration, this);
+        // setInterval(this.updateState.bind(this), this.tickDuration, this);
     }
 
-    UpdateState(){
-        for(let i = this.player.length - 1; i > 0; i--){
-            let curSegment = this.player[i];
-            let prevSergment = this.player[i - 1];
-            curSegment.x = prevSergment.x;
-            curSegment.y = prevSergment.y;
-        }
+    updateState(){
+        // this.player.draw();
+        // this.player.makeStep();
+    }
 
-        this.player[0].x += this.playerDirection.x;
-        this.player[0].y += this.playerDirection.y;
+    goThroughWalls(event){
+        let segments = event.detail;
 
-        if(this.player[0].y == -1 || this.player[0].y > this.maxY){
-            this.player[0].y = this.player[0].y == -1 ? this.maxY : 0;
-        }
+        for(let segmentIndex = 0; segmentIndex < segments.length; segmentIndex++){
+            let segment = segments[segmentIndex];
 
-        if(this.player[0].x == -1 || this.player[0].x > this.maxX){
-            this.player[0].x = this.player[0].x == -1 ? this.maxX : 0;
-        }
+            if(segment.x < 0){
+                segment.x = this.gameField.columnsCount - 1;
+            }
 
-        for(let i = 0; i < this.player.length; i ++){
-            let curSegment = this.player[i];
+            if(segment.x >= this.gameField.columnsCount){
+                segment.x = 0;
+            }
+            
+            if(segment.y < 0){
+                segment.y = this.gameField.rowsCount - 1;
+            }
 
-            curSegment.div.style.left = curSegment.x * 30;
-            curSegment.div.style.top = curSegment.y * 30;
+            if(segment.y >= this.gameField.rowsCount){
+                segment.y = 0;
+            }
         }
     }
 
