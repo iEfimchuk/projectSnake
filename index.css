@@ -4,13 +4,13 @@
 }
 
 body{
-    background-color: blueviolet;
+    background-color: #9700cc;
 }
 
 #game-field{
     margin: 20px auto;
-    border: 3px solid crimson;
-    box-shadow: 0 0 3px crimson;
+    border: 3px solid rgb(125, 255, 125);;
+    box-shadow: 0 0 3px rgb(125, 255, 125);;
 
     width: 300px;
     height: 500px;
