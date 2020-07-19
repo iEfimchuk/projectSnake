@@ -71,7 +71,7 @@ class GameField extends EventTarget{
             let segment = body[segmentIndex]; 
 
             if(segment.div == null){
-                addSegment(event);
+                this.addSegment(event);
             }
 
             segment.div.style.left = segment.x*this.segmentWidth;
