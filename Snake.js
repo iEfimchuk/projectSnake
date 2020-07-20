@@ -3,7 +3,9 @@ class Snake extends EventTarget{
         super();
         this.body = new Array();
         this.lastPlace = {x:0, y:0};
-        this.millisecondsPerStep = 100;
+        this.millisecondsPerStep = 500;
+
+        this.gameField = gameField;
 
         let newSegment = {x: 0, y: 0, div:null};
 
@@ -52,7 +54,7 @@ class Snake extends EventTarget{
     }
 
     addSegment(){
-        this.body.push({x:this.lastPlace.x + 1, y: this.lastPlace.y, div:null});
+        this.body.push({x:this.lastPlace.x, y: this.lastPlace.y, div:null});
 
         this.dispatchEvent(new CustomEvent('GrowUp', {detail: this.body}));
     }
@@ -72,6 +74,9 @@ class Snake extends EventTarget{
         this.body[0].y += this.direction.y;
 
         this.dispatchEvent(new CustomEvent('Step', {detail: this.body}));
+
+        this.gameField.updateSegments({detail: this.body});
+
         this.draw();
     }
     
@@ -187,4 +192,6 @@ class Snake extends EventTarget{
             div.style.backgroundSize = 'cover';
         }
     }
+
+    onCollision(game, actor){}
 }
