@@ -3,7 +3,7 @@ class Snake extends EventTarget{
         super();
         this.body = new Array();
         this.lastPlace = {x:0, y:0};
-        this.millisecondsPerStep = 500;
+        this.millisecondsPerStep = 200;
 
         this.gameField = gameField;
 
@@ -41,8 +41,12 @@ class Snake extends EventTarget{
             x: this.body[0].x - this.body[1].x, 
             y: this.body[0].y - this.body[1].y
         };
+    }
 
-        console.log(this.body);
+    kill(){
+        this.stop();
+
+        this.dispatchEvent(new Event('Death'));
     }
 
     move(){
@@ -100,7 +104,7 @@ class Snake extends EventTarget{
     }
 
     draw(){
-        for(let i = 0; i < this.body.length; i++){
+        for(let i = this.body.length - 1; i >= 0; i--){
 
             let curSegment = this.body[i];
 
@@ -108,84 +112,11 @@ class Snake extends EventTarget{
         
             if(i == 0){
                 div.style.backgroundImage = 'url(images/snakeHead.png)';
+                div.style.zIndex = 10;
 
-                switch(this.direction.y){
-                    case -1: div.style.transform = 'rotate(0)'; break;
-                    case 1 : div.style.transform = 'rotate(180deg)'; break;
-                }
-
-                switch(this.direction.x){
-                    case -1: div.style.transform = 'rotate(-90deg)'; break;
-                    case 1 : div.style.transform = 'rotate(90deg)'; break;
-                }
-
-            } else if(i == this.body.length - 1){
-                div.style.backgroundImage = 'url(images/snakeTail.png)';
-
-                let lDirection = {
-                    x: this.body[i - 1].x - curSegment.x,
-                    y: this.body[i - 1].y - curSegment.y
-                };
-
-                switch(lDirection.y){
-                    case -1: div.style.transform = 'rotate(0)'; break;
-                    case 1 : div.style.transform = 'rotate(180deg)'; break;
-                }
-
-                switch(lDirection.x){
-                    case -1: div.style.transform = 'rotate(-90deg)'; break;
-                    case 1 : div.style.transform = 'rotate(90deg)'; break;
-                }
             } else {
-                if((curSegment.x == this.body[i - 1].x && curSegment.x == this.body[i + 1].x) ||
-                    (curSegment.y == this.body[i - 1].y && curSegment.y == this.body[i + 1].y)){
-                    div.style.backgroundImage = 'url(images/snakeBody1.png)';
-
-                    let lDirection = {
-                        x: this.body[i - 1].x - curSegment.x,
-                        y: this.body[i - 1].y - curSegment.y
-                    };
-    
-                    switch(lDirection.y){
-                        case -1: div.style.transform = 'rotate(0)'; break;
-                        case 1 : div.style.transform = 'rotate(180deg)'; break;
-                    }
-    
-                    switch(lDirection.x){
-                        case -1: div.style.transform = 'rotate(-90deg)'; break;
-                        case 1 : div.style.transform = 'rotate(90deg)'; break;
-                    }
-                } else {
-                    div.style.backgroundImage = 'url(images/snakeBody2.png)';
-
-                    let directions = '';
-
-                    if(this.body[i - 1].x - curSegment.x == -1 || this.body[i + 1].x - curSegment.x == -1){
-                        directions = directions + 'left';
-                    }
-
-                    if(this.body[i - 1].x - curSegment.x == 1 || this.body[i + 1].x - curSegment.x == 1){
-                        directions = directions + 'right';
-                    }
-
-                    if(this.body[i - 1].y - curSegment.y == -1 || this.body[i + 1].y - curSegment.y == -1){
-                        directions = directions + 'top';
-                    }
-
-                    if(this.body[i - 1].y - curSegment.y == 1 || this.body[i + 1].y - curSegment.y == 1){
-                        directions = directions + 'bottom';
-                    }
-
-                    if(directions.indexOf('left') != -1 && directions.indexOf('bottom') != -1){
-                        div.style.transform = 'rotate(0)';
-                    } else if(directions.indexOf('left') != -1 && directions.indexOf('top') != -1){
-                        div.style.transform = 'rotate(90deg)';
-                    } else if(directions.indexOf('right') != -1 && directions.indexOf('top') != -1){
-                        div.style.transform = 'rotate(180deg)';
-                    } else if(directions.indexOf('right') != -1 && directions.indexOf('bottom') != -1){
-                        div.style.transform = 'rotate(-90deg)';
-                    }
-                }
+                div.style.backgroundImage = 'url(images/snakeBody.png)';
+                div.style.zIndex = 0;
             }
 
             div.style.backgroundPosition = 'center';
@@ -193,5 +124,15 @@ class Snake extends EventTarget{
         }
     }
 
-    onCollision(game, actor){}
+    onCollision(game, actor){
+        if(actor instanceof Snake){
+            if(this === actor){
+                for(let i = 1; i < this.body.length; i++){
+                    if(this.body[0].x == this.body[i].x && this.body[0].y == this.body[i].y){
+                        this.kill();
+                    }
+                }
+            }
+        }
+    }
 }
