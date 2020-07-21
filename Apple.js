@@ -31,6 +31,7 @@ class Apple extends EventTarget{
     onCollision(game, actor){
         if(actor instanceof Snake){
             game.score = game.score + 1;
+            actor.addSegment();
 
             let freeCell = {x: getRandomIntInclusive(0, this.gameField.columnsCount - 1), y: getRandomIntInclusive(0, this.gameField.rowsCount - 1)};
 
