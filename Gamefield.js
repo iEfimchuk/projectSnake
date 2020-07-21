@@ -64,15 +64,16 @@ class GameField extends EventTarget{
         }
     }
 
-    updateSegments(event){
+    freeSegments(event){
         let body = event.detail;
 
-
-        for(let y = 0; y < this.rowsCount; y++){
-            for(let x = 0; x < this.columnsCount; x++){
-                this.field[y][x].busy = false;
-            }
+        for(let i = 0; i < body.length; i++){
+            this.field[body[i].y][body[i].x].busy = false;
         }
+    }
+
+    updateSegments(event){
+        let body = event.detail;
 
         for(let segmentIndex = 0; segmentIndex < body.length; segmentIndex++){
             let segment = body[segmentIndex]; 
