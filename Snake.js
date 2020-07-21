@@ -4,6 +4,7 @@ class Snake extends EventTarget{
         this.body = new Array();
         this.lastPlace = {x:0, y:0};
         this.millisecondsPerStep = 200;
+        this.alive = true;
 
         this.gameField = gameField;
 
@@ -44,9 +45,11 @@ class Snake extends EventTarget{
     }
 
     kill(){
-        this.stop();
-
-        this.dispatchEvent(new Event('Death'));
+        if(this.alive){
+            this.stop();
+            this.dispatchEvent(new Event('Death'));
+            this.alive = false;
+        }
     }
 
     move(){
@@ -64,6 +67,8 @@ class Snake extends EventTarget{
     }
 
     makeStep(){
+        this.dispatchEvent(new CustomEvent('prevStep', {detail: this.body}));
+
         this.lastPlace.x = this.body[this.body.length - 1].x;
         this.lastPlace.y = this.body[this.body.length - 1].y;
 
@@ -79,7 +84,7 @@ class Snake extends EventTarget{
 
         this.dispatchEvent(new CustomEvent('Step', {detail: this.body}));
 
-        this.gameField.updateSegments({detail: this.body});
+        // this.gameField.updateSegments({detail: this.body});
 
         this.draw();
     }

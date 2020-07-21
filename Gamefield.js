@@ -6,9 +6,9 @@ class Cell extends EventTarget{
 }
 
 class GameField extends EventTarget{
-    constructor(columnsCount, rowsCount, div){
+    constructor(columnsCount, rowsCount){
         super();
-        this.div = div;
+        this.div = document.getElementById('game-field');
         this.field = new Array(rowsCount);
         this.segmentWidth = 30;
         this.segmentHeight = 30;
@@ -67,6 +67,13 @@ class GameField extends EventTarget{
     updateSegments(event){
         let body = event.detail;
 
+
+        for(let y = 0; y < this.rowsCount; y++){
+            for(let x = 0; x < this.columnsCount; x++){
+                this.field[y][x].busy = false;
+            }
+        }
+
         for(let segmentIndex = 0; segmentIndex < body.length; segmentIndex++){
             let segment = body[segmentIndex]; 
 
@@ -76,27 +83,8 @@ class GameField extends EventTarget{
 
             segment.div.style.left = segment.x*this.segmentWidth;
             segment.div.style.top = segment.y*this.segmentHeight;
-        }
 
-        this.updateField();
-    }
-
-    updateField(){
-        for(let y = 0; y < this.rowsCount; y++){
-            for(let x = 0; x < this.columnsCount; x++){
-                this.field[y][x].busy = false;
-            }
-        }
-
-        let currentSegments = this.div.getElementsByTagName('div');
-
-        for(let i = 0; i < currentSegments.length; i++){
-            let curDiv = currentSegments[i];
-
-            let curY = curDiv.clientHeight / this.segmentHeight;
-            let curX = curDiv.clientWidth / this.segmentWidth;
-
-            this.field[curY][curX].busy = true;
+            this.field[segment.y][segment.x].busy = true;
         }
     }
 }
