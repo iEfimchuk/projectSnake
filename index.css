@@ -4,13 +4,13 @@
 }
 
 body{
-    background-color: #9700cc;
+    background-color: black;
 }
 
 #game-field{
     margin: 20px auto;
-    border: 3px solid rgb(125, 255, 125);;
-    box-shadow: 0 0 3px rgb(125, 255, 125);;
+    border: 3px solid rgb(0, 224, 0);
+    box-shadow: 0 0 3px rgb(0, 224, 0);
 
     width: 300px;
     height: 500px;
@@ -18,3 +18,7 @@ body{
     position: relative;
 }
 
+#game-score{
+    color: rgb(0, 224, 0);
+    font-family: FreeMono;
+}
