@@ -1,49 +1,49 @@
 
 
 class Game extends EventTarget{
-    constructor(div, columnsCount, rowsCount){
+    constructor(columnsCount, rowsCount){
         super();
-        this.gameField = new GameField(columnsCount, rowsCount, div);
-        this.state = 'play';
+        this.gameField = new GameField(columnsCount, rowsCount);
+        this._state = 'play'; // 'play', 'pause', 'stop'
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
         this.controls = new EventTarget();
+        this._score = 0;
 
-        this.player = new Snake(this.gameField);
+        this.actors = new Array();
 
-        this.player.addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
-        this.player.addEventListener('Step', this.goThroughWalls.bind(this));
-        this.player.addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
+        this.actors.push(new Snake(this.gameField)); // player
+
+        this.actors[0].addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
+        this.actors[0].addEventListener('prevStep', this.gameField.freeSegments.bind(this.gameField));
+        this.actors[0].addEventListener('Step', this.goThroughWalls.bind(this));
+        this.actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
+        this.actors[0].addEventListener('Step', this.collisionControl.bind(this));
+        this.actors[0].addEventListener('Death', this.stop.bind(this));
+
+        this.actors.push(new Apple(this.gameField));
 
         this.controls.addEventListener('Keyboard', (function(event){
             let key = event.detail.key;
 
             if(key == "Escape"){
-                let prevState = this.state;
                 this.state = this.state == 'pause' ? 'play' : 'pause';
                 
-                let detail = {
-                    prevState : prevState,
-                    curState : this.state
-                }
-
-                this.dispatchEvent(new CustomEvent('StateChange', { detail: detail }));
-
                 if(this.state == 'play'){
-                    this.player.move();
+                    this.actors[0].move();
                 } else {
-                    this.player.stop();
+                    this.actors[0].stop();
                 }
 
                 return;
             }
 
             switch(key){
-                case 'Left' : this.player.changeDirection({x: -1, y: 0}); break;
-                case 'Right': this.player.changeDirection({x: 1, y: 0}); break;
-                case 'Up'   : this.player.changeDirection({x: 0, y: -1}); break;
-                case 'Down' : this.player.changeDirection({x: 0, y: 1}); break;
-                case 'Num1' : this.player.addSegment(); break;
+                case 'Left' : this.actors[0].changeDirection({x: -1, y: 0}); break;
+                case 'Right': this.actors[0].changeDirection({x: 1, y: 0}); break;
+                case 'Up'   : this.actors[0].changeDirection({x: 0, y: -1}); break;
+                case 'Down' : this.actors[0].changeDirection({x: 0, y: 1}); break;
+                case 'Num1' : this.actors[0].addSegment(); break;
             }
         }).bind(this));
 
@@ -52,9 +52,36 @@ class Game extends EventTarget{
         });
 
         document.onkeydown = this.keyPress.bind(this);
-        this.player.move();
+        this.actors[0].move();
 
         // setInterval(this.updateState.bind(this), this.tickDuration, this);
+    }
+
+    set score(value){
+        this.dispatchEvent(new CustomEvent({prevValue: this._score, currentValue: value}));
+
+        this._score = value;
+
+        document.getElementById('game-score').innerText = this._score;
+    }
+
+    get score(){
+        return this._score;
+    }
+
+    set state(value){
+        let detail = {
+            prevState : this._state,
+            curState : value
+        }
+
+        this._state = value;
+
+        this.dispatchEvent(new CustomEvent('StateChange', { detail: detail }));
+    }
+
+    get state(){
+        return this._state;
     }
 
     updateState(){
@@ -116,5 +143,39 @@ class Game extends EventTarget{
         if(detail.key != undefined){
             this.controls.dispatchEvent(new CustomEvent(eventName, {detail: detail}));
         }
+    }
+
+    collisionControl(){
+        for(let i = 0; i < this.actors.length; i++){
+            for(let e = i; e < this.actors.length; e++){
+                let fActor = this.actors[i];
+                let sActor = this.actors[e];
+
+                function isCollision(fBody, sBody){
+                    for(let fi = 0; fi < fBody.length; fi++){
+                        for(let si = 0; si < sBody.length; si++){
+                            if(fActor.body[si].x == sActor.body[si].x && fActor.body[si].y == sActor.body[si].y){
+                                return true;
+                            }
+                        }
+                    }
+
+                    return false;
+                }
+
+                if(isCollision(fActor.body, sActor.body)){
+                    console.log();
+
+                    fActor.onCollision(this, sActor);
+                    sActor.onCollision(this, fActor);
+                }
+            }
+        }
+    }
+
+    stop(){
+        this.state = 'stop';
+
+        alert('Game over!');
     }
 };
