@@ -6,16 +6,26 @@ class Cell extends EventTarget{
 }
 
 class GameField extends EventTarget{
-    constructor(columnsCount, rowsCount){
+    constructor(columnsCount, rowsCount, viewPortWidth, viewPortHeight){
         super();
-        this.div = document.getElementById('game-field');
-        this.field = new Array(rowsCount);
+
+        this.viewPortDiv = document.getElementById('game-field');
+        this.viewPortDiv.style.width = viewPortWidth;
+        this.viewPortDiv.style.height = viewPortHeight;
+        this.viewPortDiv.style.overflow = 'hidden';
+
+        let fieldDiv = document.createElement('div');
+        fieldDiv.style.position = 'relative';
+        this.viewPortDiv.append(fieldDiv);
+
+        this.fieldDiv = fieldDiv;
         this.segmentWidth = 30;
         this.segmentHeight = 30;
 
-        this.div.style.width = columnsCount*this.segmentWidth;
-        this.div.style.height = rowsCount*this.segmentHeight;
+        this.fieldDiv.style.width = columnsCount*this.segmentWidth;
+        this.fieldDiv.style.height = rowsCount*this.segmentHeight;
 
+        this.field = new Array(rowsCount);
         for(let y = 0; y < rowsCount; y++){
             this.field[y] = new Array(columnsCount);
 
@@ -57,7 +67,7 @@ class GameField extends EventTarget{
                 div.style.top = segment.y*this.segmentHeight;
                 div.style.transformOrigin = 'center center';
 
-                this.div.append(div);
+                this.fieldDiv.append(div);
 
                 segment.div = div;
             }

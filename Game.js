@@ -3,7 +3,7 @@
 class Game extends EventTarget{
     constructor(columnsCount, rowsCount){
         super();
-        this.gameField = new GameField(columnsCount, rowsCount);
+        this.gameField = new GameField(columnsCount, rowsCount, 240, 390);
         this._state = 'play'; // 'play', 'pause', 'stop'
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
