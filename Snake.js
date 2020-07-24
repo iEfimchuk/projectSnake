@@ -117,7 +117,7 @@ class Snake extends EventTarget{
         
             if(i == 0){
                 div.style.backgroundImage = 'url(images/snakeHead.png)';
-                div.style.zIndex = 10;
+                div.style.zIndex = 1;
 
             } else {
                 div.style.backgroundImage = 'url(images/snakeBody.png)';
