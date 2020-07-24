@@ -18,6 +18,7 @@ class Game extends EventTarget{
         this.actors[0].addEventListener('prevStep', this.gameField.freeSegments.bind(this.gameField));
         this.actors[0].addEventListener('Step', this.goThroughWalls.bind(this));
         this.actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
+        this.actors[0].addEventListener('Step', this.gameField.moveViewPortOnStep.bind(this.gameField));
         this.actors[0].addEventListener('Step', this.collisionControl.bind(this));
         this.actors[0].addEventListener('Death', this.stop.bind(this));
 
@@ -62,7 +63,7 @@ class Game extends EventTarget{
 
         this._score = value;
 
-        document.getElementById('game-score').innerText = this._score;
+        document.getElementById('game-score').innerText = `Score: ${this._score}`;
     }
 
     get score(){
