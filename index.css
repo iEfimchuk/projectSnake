@@ -27,35 +27,34 @@ body{
 }
 
 .arrow{
-    background-image: url(images/arrow.png);
-    background-size: cover;
-    background-position: center;
-    width: 30px;
-    height: 30px;
     position: absolute;
     z-index: 2;
-    opacity: 0.5;
-
-    transform-origin: center center;
+    opacity: 0.2;
     transition: all 0.2s ease-out;
+    box-sizing: border-box;
 }
 
 #arrow-up{
     left: calc((100% - 30px)/2);
-    top: 5px;
+    top: -10px;	
+    
+    border: 20px solid transparent; border-bottom: 20px solid rgb(0, 255, 0);
 }
 #arrow-right{
-    right: 5px;
+    right: -10px;
     top: calc((100% - 30px)/2);
-    transform: rotate(90deg);
+
+    border: 20px solid transparent; border-left: 20px solid rgb(0, 255, 0);
 }
 #arrow-down{
     left: calc((100% - 30px)/2);
-    bottom: 5px;
-    transform: rotate(180deg);
+    bottom: -10px;
+
+    border: 20px solid transparent; border-top: 20px solid rgb(0, 255, 0);
 }
 #arrow-left{
-    left: 5px;
+    left: -10px;
     top: calc((100% - 30px)/2);
-    transform: rotate(-90deg);
+
+    border: 20px solid transparent; border-right: 20px solid rgb(0, 255, 0);
 }
