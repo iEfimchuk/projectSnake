@@ -25,3 +25,37 @@ body{
     color: rgb(0, 224, 0);
     font-family: FreeMono;
 }
+
+.arrow{
+    background-image: url(images/arrow.png);
+    background-size: cover;
+    background-position: center;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    z-index: 2;
+    opacity: 0.5;
+
+    transform-origin: center center;
+    transition: all 0.2s ease-out;
+}
+
+#arrow-up{
+    left: calc((100% - 30px)/2);
+    top: 5px;
+}
+#arrow-right{
+    right: 5px;
+    top: calc((100% - 30px)/2);
+    transform: rotate(90deg);
+}
+#arrow-down{
+    left: calc((100% - 30px)/2);
+    bottom: 5px;
+    transform: rotate(180deg);
+}
+#arrow-left{
+    left: 5px;
+    top: calc((100% - 30px)/2);
+    transform: rotate(-90deg);
+}
