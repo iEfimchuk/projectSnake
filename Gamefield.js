@@ -23,13 +23,15 @@ class GameField extends EventTarget{
 
         let fieldDiv = document.createElement('div');
         fieldDiv.style.position = 'relative';
-        fieldDiv.style.border = '1px solid rgb(0, 160, 192)';
+        fieldDiv.style.border = '1px solid rgb(0, 224, 0)';
+        fieldDiv.style.boxShadow = '0 0 10px rgb(0, 224, 0)';
+        fieldDiv.style.webkitBoxShadow = '0 0 10px rgb(0, 224, 0)';
         fieldDiv.style['-webkit-transition'] = 'all 0.2s ease-out';
         this.viewPortDiv.append(fieldDiv);
 
         this.fieldDiv = fieldDiv;
-        this.segmentWidth = 30;
-        this.segmentHeight = 30;
+        this.segmentWidth = 20;
+        this.segmentHeight = 20;
 
         this.fieldDiv.style.width = columnsCount*this.segmentWidth;
         this.fieldDiv.style.height = rowsCount*this.segmentHeight;
@@ -188,20 +190,20 @@ class GameField extends EventTarget{
             height : this.viewPortDiv.clientHeight,
         }
 
-        if(headCoord.left + fieldCoord.left < this.segmentWidth*2){
-            this.fieldDiv.style.left = fieldCoord.left + this.segmentWidth*2 - (headCoord.left + fieldCoord.left);
+        if(headCoord.left + fieldCoord.left < 60){
+            this.fieldDiv.style.left = fieldCoord.left + 60 - (headCoord.left + fieldCoord.left);
         }
 
-        if(vpCoord.width - ((headCoord.left + fieldCoord.left) + headCoord.width) < this.segmentWidth*2){
-            this.fieldDiv.style.left = vpCoord.width - this.segmentWidth*2 - headCoord.left - headCoord.width;
+        if(vpCoord.width - ((headCoord.left + fieldCoord.left) + headCoord.width) < 60){
+            this.fieldDiv.style.left = vpCoord.width - 60- headCoord.left - headCoord.width;
         }
 
-        if(headCoord.top + fieldCoord.top < this.segmentHeight*2){
-            this.fieldDiv.style.top = fieldCoord.top + this.segmentHeight*2 - (headCoord.top + fieldCoord.top);
+        if(headCoord.top + fieldCoord.top < 60){
+            this.fieldDiv.style.top = fieldCoord.top + 60 - (headCoord.top + fieldCoord.top);
         }
 
-        if(vpCoord.height - ((headCoord.top + fieldCoord.top) + headCoord.height) < this.segmentHeight*2){
-            this.fieldDiv.style.top = vpCoord.height - this.segmentHeight*2 - headCoord.top - headCoord.height;
+        if(vpCoord.height - ((headCoord.top + fieldCoord.top) + headCoord.height) < 60){
+            this.fieldDiv.style.top = vpCoord.height - 60 - headCoord.top - headCoord.height;
         }
 
         this.showArrows();
