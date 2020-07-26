@@ -15,14 +15,15 @@ class Game extends EventTarget{
         this.actors.push(new Snake(this.gameField)); // player
 
         this.actors[0].addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
-        this.actors[0].addEventListener('prevStep', this.gameField.freeSegments.bind(this.gameField));
+        this.actors[0].addEventListener('PrevStep', this.gameField.freeSegments.bind(this.gameField));
         this.actors[0].addEventListener('Step', this.goThroughWalls.bind(this));
-        this.actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
+        // this.actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
         this.actors[0].addEventListener('Step', this.gameField.moveViewPortOnStep.bind(this.gameField));
         this.actors[0].addEventListener('Step', this.collisionControl.bind(this));
         this.actors[0].addEventListener('Death', this.stop.bind(this));
 
         this.actors.push(new Apple(this.gameField));
+        this.actors.push(new Portal(this.gameField));
 
         this.controls.addEventListener('Keyboard', (function(event){
             let key = event.detail.key;
@@ -155,7 +156,7 @@ class Game extends EventTarget{
                 function isCollision(fBody, sBody){
                     for(let fi = 0; fi < fBody.length; fi++){
                         for(let si = 0; si < sBody.length; si++){
-                            if(fActor.body[si].x == sActor.body[si].x && fActor.body[si].y == sActor.body[si].y){
+                            if(fActor.body[fi].x == sActor.body[si].x && fActor.body[fi].y == sActor.body[si].y){
                                 return true;
                             }
                         }
