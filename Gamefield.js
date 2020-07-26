@@ -195,7 +195,7 @@ class GameField extends EventTarget{
         }
 
         if(vpCoord.width - ((headCoord.left + fieldCoord.left) + headCoord.width) < 60){
-            this.fieldDiv.style.left = vpCoord.width - 60- headCoord.left - headCoord.width;
+            this.fieldDiv.style.left = vpCoord.width - 60 - headCoord.left - headCoord.width;
         }
 
         if(headCoord.top + fieldCoord.top < 60){
@@ -208,5 +208,18 @@ class GameField extends EventTarget{
 
         this.showArrows();
     }
-    
+
+    getFreeCell(){
+        let freeCell = {x: getRandomIntInclusive(0, this.columnsCount - 1), y: getRandomIntInclusive(0, this.rowsCount - 1)};
+
+        while(true){
+            if(this.isFreeCell(freeCell)){
+                break;
+            } else {
+                freeCell = {x: getRandomIntInclusive(0, this.columnsCount - 1), y: getRandomIntInclusive(0, this.rowsCount - 1)};
+            }
+        }
+
+        return freeCell;
+    }
 }
