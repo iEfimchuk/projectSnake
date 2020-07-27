@@ -10,6 +10,7 @@ class Portal extends EventTarget{
 
         this.body = new Array();
         this.gameField = gameField;
+        this.buffer = {};
 
         this.resetBody();
 
@@ -41,11 +42,21 @@ class Portal extends EventTarget{
         if(actor instanceof Snake){
             for(let i = 0; i < this.body.length; i++){
                 if(this.body[i].x == actor.body[0].x && this.body[i].x == actor.body[0].x){
-                    actor.body[0].x = this.body[(i + 1)%2].x;
-                    actor.body[0].y = this.body[(i + 1)%2].y;
+                    actor.addEventListener('PrevStep', 
+                                            this.goThroughThePortalPrev.bind(
+                                                this, 
+                                                actor, 
+                                                this.body[(i + 1)%2].x, 
+                                                this.body[(i + 1)%2].y), 
+                                            {once : true})
                     this.clearBody();
-                    setTimeout(this.resetBody.bind(this), getRandomIntInclusive(1000, 10000));
                     break;
+                    
+                    // actor.body[0].x = this.body[(i + 1)%2].x;
+                    // actor.body[0].y = this.body[(i + 1)%2].y;
+                    // this.clearBody();
+                    // setTimeout(this.resetBody.bind(this), getRandomIntInclusive(1000, 10000));
+                    // break;
                 }
             }
             // this.clearBody();
@@ -53,10 +64,26 @@ class Portal extends EventTarget{
         }
     }
 
+    goThroughThePortalPrev(snake, x, y){
+        this.buffer['oldDirection'] = snake.direction;
+        
+        snake.direction = {
+            x: x - snake.head.x,
+            y: y - snake.head.y
+        };        
+
+        snake.addEventListener('Step', this.goThroughThePortal.bind(this, snake), {once:true})
+
+        // this.clearBody();
+        // setTimeout(this.resetBody.bind(this), getRandomIntInclusive(1000, 10000));
+    }
+
     goThroughThePortal(snake, x, y){
-        snake.body[0].x = x;
-        snake.body[0].y = y;
-        this.clearBody();
+        snake.direction = {
+            x: this.buffer.oldDirection.x,
+            y: this.buffer.oldDirection.y,
+        }
+
         setTimeout(this.resetBody.bind(this), getRandomIntInclusive(1000, 10000));
     }
 
