@@ -42,6 +42,8 @@ class Snake extends EventTarget{
             x: this.body[0].x - this.body[1].x, 
             y: this.body[0].y - this.body[1].y
         };
+
+        this.gameField.updateSegments({detail: this.body});
     }
 
     get head(){
