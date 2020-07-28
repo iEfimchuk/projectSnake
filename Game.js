@@ -25,6 +25,8 @@ class Game extends EventTarget{
         this.actors.push(new Apple(this.gameField));
         this.actors.push(new Portal(this.gameField));
 
+        let ai = new AI(this.actors[0], this.actors[1]);
+
         this.controls.addEventListener('Keyboard', (function(event){
             let key = event.detail.key;
 
