@@ -3,7 +3,7 @@
 class Game extends EventTarget{
     constructor(columnsCount, rowsCount){
         super();
-        this.gameField = new GameField(columnsCount, rowsCount, 400, 400);
+        this.gameField = new GameField(columnsCount, rowsCount, 20, 30);
         this._state = 'play'; // 'play', 'pause', 'stop'
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
@@ -25,7 +25,7 @@ class Game extends EventTarget{
         this.actors.push(new Apple(this.gameField));
         this.actors.push(new Portal(this.gameField));
 
-        let ai = new AI(this.actors[0], this.actors[1]);
+        // let ai = new AI(this.actors[0], this.actors[1]);
 
         this.controls.addEventListener('Keyboard', (function(event){
             let key = event.detail.key;

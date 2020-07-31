@@ -1,3 +1,3 @@
 window.onload = function(event){
-    let game = new Game(50, 50);
+    let game = new Game(40, 40);
 }
