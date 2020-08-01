@@ -6,16 +6,27 @@ class Cell extends EventTarget{
 }
 
 class GameField extends EventTarget{
-    constructor(columnsCount, rowsCount, viewPortWidth, viewPortHeight){
+    constructor(columnsCount, rowsCount, visibleSegmentsOnWidthCount, visibleSegmentsOnHeightCount){
         super();
 
         this.segmentWidth = 20;
         this.segmentHeight = 20;
         this.minSegmentCountToEdge = 4;
+        this._visibleArea = {
+            x : 0,
+            y : 0,
+            minX : 0,
+            maxX : 0,
+            minY : 0,
+            maxY : 0
+        }
+
+        this.visibleSegmentsOnHeightCount = visibleSegmentsOnHeightCount;
+        this.visibleSegmentsOnWidthCount = visibleSegmentsOnWidthCount;
 
         this.viewPortDiv = document.getElementById('game-field');
-        this.viewPortDiv.style.width = this.segmentWidth*viewPortWidth;
-        this.viewPortDiv.style.height = this.segmentHeight*viewPortHeight;
+        this.viewPortDiv.style.width = this.segmentWidth*visibleSegmentsOnWidthCount;
+        this.viewPortDiv.style.height = this.segmentHeight*visibleSegmentsOnHeightCount;
         this.viewPortDiv.style.overflow = 'hidden';
 
         this.arrows = {
@@ -141,74 +152,62 @@ class GameField extends EventTarget{
     }
 
     setupViewPortPosition(){
-        if(this.viewPortDiv.style.width == this.fieldDiv.style.width && this.viewPortDiv.style.height == this.fieldDiv.style.height){
-            return;
-        }
-
-        this.fieldDiv.style.left = (this.viewPortDiv.clientWidth - this.fieldDiv.clientWidth)/2;
-        this.fieldDiv.style.top = (this.viewPortDiv.clientHeight - this.fieldDiv.clientHeight)/2;
-
-        this.showArrows();
+        this.moveViewPort(0, 0);
     }
 
     moveViewPort(x, y){
-        if(this.viewPortDiv.style.width == this.fieldDiv.style.width && this.viewPortDiv.style.height == this.fieldDiv.style.height){
-            return;
-        }
-        
-        if(this.viewPortDiv.clientWidth >= this.fieldDiv.clientWidth){
-            this.fieldDiv.style.left = (this.viewPortDiv.clientWidth - this.fieldDiv.clientWidth)/2;
-        }
-        
-        if(this.viewPortDiv.clientHeight >= this.fieldDiv.clientHeight){
-            this.fieldDiv.style.top = (this.viewPortDiv.clientHeight - this.fieldDiv.clientHeight)/2;
-        }
+        this.resetVisibleArea(x, y);
 
-        
+        this.fieldDiv.style.left = -x * this.segmentWidth;
+        this.fieldDiv.style.top = -y * this.segmentHeight;
+
+        this.showArrows();
+    }
+
+    resetVisibleArea(x, y){
+        this._visibleArea.x = x;
+        this._visibleArea.y = y;
+        this._visibleArea.minX = this._visibleArea.x + 4;
+        this._visibleArea.maxX = this._visibleArea.x + (this.visibleSegmentsOnWidthCount - 1) - 4;
+        this._visibleArea.minY = this._visibleArea.y + 4;
+        this._visibleArea.maxY = this._visibleArea.y + (this.visibleSegmentsOnHeightCount - 1) - 4;
+
+        this.dispatchEvent(new Event('ChangeVisibleArea'));
+    }
+
+    needViewPortRemoving(Coord){
+        let minX = this._visibleArea.minX;
+        let maxX = this._visibleArea.maxX;
+        let minY = this._visibleArea.minY;
+        let maxY = this._visibleArea.maxY;
+
+        return Coord.x < minX || Coord.x > maxX || Coord.y < minY || Coord.y > maxY;
     }
 
     moveViewPortOnStep(event){
-        let body = event.detail; 
-        let headDiv = body[0].div;
+        let head = event.detail[0]; 
 
-        let fieldCoord = {
-            left : Number(this.fieldDiv.style.left.replace('px', '')),
-            top : Number(this.fieldDiv.style.top.replace('px', '')),
-            width : this.fieldDiv.clientWidth,
-            height : this.fieldDiv.clientHeight,
-        }
-        
-        let headCoord = {
-            left : Number(headDiv.style.left.replace('px', '')),
-            top : Number(headDiv.style.top.replace('px', '')),
-            width : headDiv.clientWidth,
-            height : headDiv.clientHeight,
-        }        
-        
-        let vpCoord = {
-            left : Number(this.viewPortDiv.style.left.replace('px', '')),
-            top : Number(this.viewPortDiv.style.top.replace('px', '')),
-            width : this.viewPortDiv.clientWidth,
-            height : this.viewPortDiv.clientHeight,
-        }
+        if(this.needViewPortRemoving(head)){
+            let hx = head.x;
+            let hy = head.y;
+            let minX = this._visibleArea.minX;
+            let minY = this._visibleArea.minY;
+            let maxX = this._visibleArea.maxX;
+            let maxY = this._visibleArea.maxY;
+            let minSCRE = this.minSegmentCountToEdge;
+            let vSOWC = this.visibleSegmentsOnWidthCount;
+            let vSOHC = this.visibleSegmentsOnHeightCount;
 
-        if(headCoord.left + fieldCoord.left < this.segmentWidth*this.minSegmentCountToEdge){
-            this.fieldDiv.style.left = fieldCoord.left + this.segmentWidth*this.minSegmentCountToEdge - (headCoord.left + fieldCoord.left);
-        }
+            let x = this._visibleArea.x;
+            let y = this._visibleArea.y;
+            
+            x = hx > maxX ? hx + minSCRE - (vSOWC - 1) : x;            
+            x = hx < minX ? hx - minSCRE : x;            
+            y = hy > maxY ? hy + minSCRE - (vSOHC - 1) : y;
+            y = hy < minY ? hy - minSCRE : y;
 
-        if(vpCoord.width - ((headCoord.left + fieldCoord.left) + headCoord.width) < this.segmentWidth*this.minSegmentCountToEdge){
-            this.fieldDiv.style.left = vpCoord.width - this.segmentWidth*this.minSegmentCountToEdge - headCoord.left - headCoord.width;
+            this.moveViewPort(x, y);
         }
-
-        if(headCoord.top + fieldCoord.top < this.segmentHeight*this.minSegmentCountToEdge){
-            this.fieldDiv.style.top = fieldCoord.top + this.segmentHeight*this.minSegmentCountToEdge - (headCoord.top + fieldCoord.top);
-        }
-
-        if(vpCoord.height - ((headCoord.top + fieldCoord.top) + headCoord.height) < this.segmentHeight*this.minSegmentCountToEdge){
-            this.fieldDiv.style.top = vpCoord.height - this.segmentHeight*this.minSegmentCountToEdge - headCoord.top - headCoord.height;
-        }
-
-        this.showArrows();
     }
 
     getFreeCell(){
@@ -223,5 +222,9 @@ class GameField extends EventTarget{
         }
 
         return freeCell;
+    }
+
+    gitVisibleSegments(){
+
     }
 }
