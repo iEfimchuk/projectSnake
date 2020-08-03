@@ -1,10 +1,3 @@
-class Cell extends EventTarget{
-    constructor(){
-        super();
-        this.busy = false;
-    }
-}
-
 class GameField extends EventTarget{
     constructor(columnsCount, rowsCount, visibleSegmentsOnWidthCount, visibleSegmentsOnHeightCount){
         super();
@@ -54,7 +47,7 @@ class GameField extends EventTarget{
             this.field[y] = new Array(columnsCount);
 
             for(let x = 0; x < columnsCount; x++){
-                this.field[y][x] = new Cell();
+                this.field[y][x] = {busy : false};
             }
         }
 
