@@ -39,8 +39,10 @@ class Snake extends EventTarget{
         }
 
         this.direction = {
-            x: this.body[0].x - this.body[1].x, 
-            y: this.body[0].y - this.body[1].y
+            // x: this.body[0].x - this.body[1].x, 
+            // y: this.body[0].y - this.body[1].y
+            x: 0, 
+            y: 1
         };
 
         this.gameField.updateSegments({detail: this.body});
