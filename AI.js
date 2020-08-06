@@ -20,14 +20,8 @@ class AI {
 
         if(goal.x >= minX && goal.x < maxX && goal.y >= minY && goal.y < maxY){
             let curVisibleArea = this.getVisibleArea(minX, maxX, minY, maxY);
-            let gDP = this.getDirectPaths(curVisibleArea);
-    
-            let hPaths = this.getHorizontalPaths(gDP);
-            let vPaths = this.getVerticalPaths(gDP);
-
-
-
-            // console.log(gDP);
+            
+            console.log(AI.searchPathToTheGoal(curVisibleArea, this.begin, this.end));
         }
 
         let headCoord = this.bot.body[0];
@@ -44,26 +38,112 @@ class AI {
         }
     }
 
-    searchPathToTheGoal(goal){
+    static searchPathToTheGoal(field, begin, end){
+        let gDP = AI.getDirectPaths(field);
+    
+        let hPaths = AI.getHorizontalPaths(gDP);
+        let vPaths = AI.getVerticalPaths(gDP);
+
+        let variantsOfPaths = gDP.filter(function(element, index, array){
+            return AI.contains(element, this);
+        }, begin)
+
+        let curPaths = new Array();
+
+        for(let i = 0; i < variantsOfPaths.length; i++){
+            curPaths.push(new Array());
+            curPaths[curPaths.length - 1].push(variantsOfPaths[i]);
+        }
+
+        while(true){
+            for(let i = 0; i < curPaths.length; i++){
+                if(AI.contains(curPaths[i][curPaths[i].length - 1], end)){
+                    return curPaths[i];
+                }
+            }
+
+            if(curPaths[0].length > 2){
+                return undefined;
+            }
+
+            let newCurPathsArray = new Array;
+
+            for(let i = 0; i < curPaths.length; i++){
+                let curPathsSource;
+
+                if(AI.verticalPath(curPaths[i][curPaths[i].length - 1])){
+                    curPathsSource = hPaths;
+                } else if(AI.horizontalPath(curPaths[i][curPaths[i].length - 1])){
+                    curPathsSource = vPaths;
+                }
+
+                let contactPaths = curPathsSource.filter(function(element, index, array){
+                    return AI.contact(element, this[this.length - 1]) && this.some(function(element, index, array){
+                        return !(AI.equals(element, this));
+                    }, element); 
+                }, curPaths[i]);
+
+                for(let e = 0; e < contactPaths.length; e++){
+                    newCurPathsArray.push(Array.from(curPaths[i]));
+                    newCurPathsArray[newCurPathsArray.length - 1].push(contactPaths[e]);
+                }
+            }
+            curPaths = newCurPathsArray;
+            console.log(curPaths);
+        }
     }
 
-    getVerticalPaths(paths){
-        return paths.filter(function (element, index, array){return this.verticalPath(element);}, this);
+    static getVerticalPaths(paths){
+        return paths.filter(function (element, index, array){return AI.verticalPath(element);}, this);
     }
 
-    getHorizontalPaths(paths){
-        return paths.filter(function (element, index, array){return this.horizontalPath(element);}, this);
+    static getHorizontalPaths(paths){
+        return paths.filter(function (element, index, array){return AI.horizontalPath(element);}, this);
     }
 
-    horizontalPath(path){
+    static horizontalPath(path){
         return path[0].y == path[1].y;
     }
     
-    verticalPath(path){
+    static verticalPath(path){
         return path[0].x == path[1].x;
     }
 
-    getDirectPaths(area){
+    static contains(path, point){
+        if(this.verticalPath(path)){
+            return (path[0].x == point.x && point.y >= path[0].y && point.y <= path[1].y);
+        }
+        
+        if(this.horizontalPath(path)){
+            return (path[0].y == point.y && point.x >= path[0].x && point.x <= path[1].x);
+        }
+    }
+
+    static equals(fpath, spath){
+        for(let i = 0; i < 2; i++){
+            if(fpath[i].x != spath[i].x || fpath[i].y != spath[i].y){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static contact(fpath, spath){
+        let a, b;
+        
+        if(AI.horizontalPath(fpath)){
+            a = fpath;
+            b = spath
+        } else {
+            a = spath;
+            b = fpath;
+        }
+
+        return b[0].x >= a[0].x && b[0].x <= a[1].x && b[0].y <= a[0].y && b[1].y >= a[0].y;
+    }
+
+    static getDirectPaths(area){
         let paths = new Array();
 
         for(let y = 0; y < area.length; y++){
@@ -123,7 +203,11 @@ class AI {
 
             for(let x = minX < 0 ? 0 : minX; (x < maxX) && (x < this.gameField.columnsCount); x++){
                 
-                if(x == this.goal.body[0].x && y == this.goal.body[0].y){
+                if(x == this.bot.body[0].x && y == this.bot.body[0].y){
+                    this.begin = {x: curRow.length, y: result.length};
+                    curRow.push(false);
+                } else if(x == this.goal.body[0].x && y == this.goal.body[0].y){
+                    this.end = {x: curRow.length, y: result.length};
                     curRow.push(false);
                 } else {
                     curRow.push(this.gameField.field[y][x].busy);
