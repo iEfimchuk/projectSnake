@@ -1,12 +1,31 @@
-class AI {
+class AI extends EventTarget{
     constructor(bot, goal, gameField){
+        super();
         this.bot = bot;
         this.goal = goal;
         this.gameField = gameField;
 
-        this.path = new Array;
+        this._path = new Array;
 
         this.bot.addEventListener('Step', this.onStep.bind(this));
+    }
+
+    set path(value){
+        this._path = value;
+    }
+
+    get path(){
+        return this._path;
+    }
+
+    static normalizeVector(vector){
+        let x = vector.x;
+        let y = vector.y;
+
+        return {
+            x: (x != 0) ? x/Math.abs(x) : 0,
+            y: (y != 0) ? y/Math.abs(y) : 0,
+        }
     }
 
     onStep(event){
@@ -20,8 +39,10 @@ class AI {
 
         if(goal.x >= minX && goal.x < maxX && goal.y >= minY && goal.y < maxY){
             let curVisibleArea = this.getVisibleArea(minX, maxX, minY, maxY);
-            
-            console.log(AI.searchPathToTheGoal(curVisibleArea, this.begin, this.end));
+
+            this.path = AI.searchPathToTheGoal(curVisibleArea, this.bot.body[0], goal);
+        } else {
+            this._path = new Array();
         }
 
         let headCoord = this.bot.body[0];
@@ -35,6 +56,14 @@ class AI {
             snake.changeDirection({x: 0, y: -1});
         } else if (headCoord.y < this.goal.body[0].y){
             snake.changeDirection({x: 0, y: 1});
+        }
+    }
+
+    static getCollisionPoint(fPath, sPath){
+        if(AI.horizontalPath(fPath)){
+            return {x: sPath[0].x, y: fPath[0].y};
+        } else {
+            return {x: fPath[0].x, y: sPath[0].y};
         }
     }
 
@@ -55,15 +84,18 @@ class AI {
             curPaths[curPaths.length - 1].push(variantsOfPaths[i]);
         }
 
+        let curPath;
+
         while(true){
             for(let i = 0; i < curPaths.length; i++){
                 if(AI.contains(curPaths[i][curPaths[i].length - 1], end)){
-                    return curPaths[i];
+                    curPath = curPaths[i];
+                    break;
                 }
             }
 
             if(curPaths[0].length > 2){
-                return undefined;
+                break;
             }
 
             let newCurPathsArray = new Array;
@@ -89,8 +121,38 @@ class AI {
                 }
             }
             curPaths = newCurPathsArray;
-            console.log(curPaths);
         }
+
+        if(curPath == undefined){
+            return undefined;
+        }
+
+        curPath.push([end, end]);
+
+        let pathBySections = new Array();
+        pathBySections.push(begin);
+
+        for(let i = 0; i < curPath.length - 1; i++){
+            let localGoal = AI.getCollisionPoint(curPath[i], curPath[i + 1]);
+
+            let localDirection = AI.normalizeVector({
+                x: localGoal.x - pathBySections[pathBySections.length - 1].x,
+                y: localGoal.y - pathBySections[pathBySections.length - 1].y
+            });
+
+            do{
+                let curSectionOnPath = {
+                    x: pathBySections[pathBySections.length - 1].x + localDirection.x,
+                    y: pathBySections[pathBySections.length - 1].y + localDirection.y
+                }
+
+                pathBySections.push(curSectionOnPath);
+            } while (!(pathBySections[pathBySections.length - 1].x == localGoal.x && pathBySections[pathBySections.length - 1].y == localGoal.y))
+        }
+
+        pathBySections.shift();
+
+        return pathBySections;
     }
 
     static getVerticalPaths(paths){
@@ -119,9 +181,9 @@ class AI {
         }
     }
 
-    static equals(fpath, spath){
+    static equals(fPath, sPath){
         for(let i = 0; i < 2; i++){
-            if(fpath[i].x != spath[i].x || fpath[i].y != spath[i].y){
+            if(fPath[i].x != sPath[i].x || fPath[i].y != sPath[i].y){
                 return false;
             }
         }
@@ -129,15 +191,15 @@ class AI {
         return true;
     }
 
-    static contact(fpath, spath){
+    static contact(fPath, sPath){
         let a, b;
         
-        if(AI.horizontalPath(fpath)){
-            a = fpath;
-            b = spath
+        if(AI.horizontalPath(fPath)){
+            a = fPath;
+            b = sPath
         } else {
-            a = spath;
-            b = fpath;
+            a = sPath;
+            b = fPath;
         }
 
         return b[0].x >= a[0].x && b[0].x <= a[1].x && b[0].y <= a[0].y && b[1].y >= a[0].y;
@@ -193,29 +255,17 @@ class AI {
         return paths;
     }
 
-    getVisibleArea(minX, maxX, minY, maxY){
+    getVisibleArea(){
         this.gameField.updateSegments({detail: this.bot.body});
 
-        let result = new Array();
+        let result = this.gameField.field.map(function(element, index, array){
+            return element.map(function(element, index, array){
+                return element.busy;
+            })
+        });
 
-        for(let y = minY < 0 ? 0 : minY; (y < maxY) && (y < this.gameField.rowsCount); y++){
-            let curRow = new Array;
-
-            for(let x = minX < 0 ? 0 : minX; (x < maxX) && (x < this.gameField.columnsCount); x++){
-                
-                if(x == this.bot.body[0].x && y == this.bot.body[0].y){
-                    this.begin = {x: curRow.length, y: result.length};
-                    curRow.push(false);
-                } else if(x == this.goal.body[0].x && y == this.goal.body[0].y){
-                    this.end = {x: curRow.length, y: result.length};
-                    curRow.push(false);
-                } else {
-                    curRow.push(this.gameField.field[y][x].busy);
-                }
-            }
-
-            result.push(curRow);
-        }
+        result[this.bot.body[0].y][this.bot.body[0].x] = false;
+        result[this.goal.body[0].y][this.goal.body[0].x] = false;
 
         return result;
     }
