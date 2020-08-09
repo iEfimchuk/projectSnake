@@ -1,3 +1,5 @@
+let SIZE = 8;
+
 class AI extends EventTarget{
     constructor(bot, goal, gameField){
         super();
@@ -7,7 +9,19 @@ class AI extends EventTarget{
 
         this._path = new Array;
 
-        this.bot.addEventListener('Step', this.onStep.bind(this));
+        {
+            let canvas = document.createElement('canvas');
+            canvas.id = 'AI';
+            document.body.append(canvas);
+
+            canvas.width = this.gameField.field[0].length*SIZE;
+            canvas.height = this.gameField.field.length*SIZE;
+            // canvas.style.backgroundColor = 'white';
+
+            this.canvas = document.getElementById('AI');
+        }
+
+        this.bot.addEventListener('PrevStep', this.onStep.bind(this));
     }
 
     set path(value){
@@ -44,6 +58,8 @@ class AI extends EventTarget{
         } else {
             this._path = new Array();
         }
+
+        this.drawCurrentPath();
 
         let headCoord = this.bot.body[0];
         let snake = this.bot;
@@ -86,6 +102,8 @@ class AI extends EventTarget{
 
         let curPath;
 
+        let tries = 0;
+
         while(true){
             for(let i = 0; i < curPaths.length; i++){
                 if(AI.contains(curPaths[i][curPaths[i].length - 1], end)){
@@ -94,7 +112,11 @@ class AI extends EventTarget{
                 }
             }
 
-            if(curPaths[0].length > 2){
+            if(curPaths.length == 0){
+                break;
+            }
+
+            if(curPaths[0].length > 3){
                 break;
             }
 
@@ -121,7 +143,11 @@ class AI extends EventTarget{
                 }
             }
             curPaths = newCurPathsArray;
+
+            tries ++;
         }
+
+        console.log(tries);
 
         if(curPath == undefined){
             return undefined;
@@ -149,8 +175,6 @@ class AI extends EventTarget{
                 pathBySections.push(curSectionOnPath);
             } while (!(pathBySections[pathBySections.length - 1].x == localGoal.x && pathBySections[pathBySections.length - 1].y == localGoal.y))
         }
-
-        pathBySections.shift();
 
         return pathBySections;
     }
@@ -268,5 +292,29 @@ class AI extends EventTarget{
         result[this.goal.body[0].y][this.goal.body[0].x] = false;
 
         return result;
+    }
+
+    drawCurrentPath(){
+        var ctx = this.canvas.getContext("2d");
+        
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        if(this._path == undefined){
+            return;
+        }
+
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(this.bot.body[0].x * SIZE, this.bot.body[0].y * SIZE, SIZE, SIZE);
+
+        ctx.fillStyle = 'red';
+        ctx.fillRect(this.goal.body[0].x * SIZE, this.goal.body[0].y * SIZE, SIZE, SIZE);
+
+        ctx.fillStyle = "yellow";
+        for(let i = 0; i < this._path.length; i++){
+            let curSection = this._path[i];
+
+            ctx.fillRect(curSection.x * SIZE + 2, curSection.y * SIZE + 2, SIZE - 4, SIZE - 4);
+        }
     }
 }
