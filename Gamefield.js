@@ -1,4 +1,6 @@
-class GameField extends EventTarget{
+import getRandomIntInclusive from './Math';
+
+export default class GameField extends EventTarget{
     constructor(columnsCount, rowsCount, visibleSegmentsOnWidthCount, visibleSegmentsOnHeightCount){
         super();
 

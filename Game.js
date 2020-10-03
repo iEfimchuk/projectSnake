@@ -1,6 +1,10 @@
+import Scene from './Scene';
+import Snake from './Snake';
+import Apple from './Apple';
+import Portal from './Portal';
+import GameField from './Gamefield';
 
-
-class Game extends Scene{
+export default class Game extends Scene{
     constructor(columnsCount, rowsCount){
         super();
         this.gameField = new GameField(columnsCount, rowsCount, 20, 30);

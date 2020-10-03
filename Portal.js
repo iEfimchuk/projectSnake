@@ -1,10 +1,7 @@
-function getRandomIntInclusive(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; //Максимум и минимум включаются
-}
+import getRandomIntInclusive from './Math';
+import Snake from './Snake';
 
-class Portal extends EventTarget{
+export default class Portal extends EventTarget{
     constructor(gameField){
         super();
 

@@ -1,4 +1,4 @@
-class Snake extends EventTarget{
+export default class Snake extends EventTarget{
     constructor(gameField){
         super();
         this.body = new Array();

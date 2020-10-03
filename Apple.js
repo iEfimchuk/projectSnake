@@ -1,10 +1,7 @@
-function getRandomIntInclusive(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; //Максимум и минимум включаются
-}
+import getRandomIntInclusive from './Math';
+import Snake from './Snake';
 
-class Apple extends EventTarget{
+export default class Apple extends EventTarget{
     constructor(gameField){
         super();
         this.body = [];
@@ -64,4 +61,3 @@ class Apple extends EventTarget{
         }
     }
 }
-

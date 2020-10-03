@@ -1,6 +1,6 @@
 const STATES = Object({'CREATED': 0, 'EXECUTING': 1, 'PAUSED': 2, 'STOPPED':3});
 
-class Scene extends EventTarget{
+export default class Scene extends EventTarget{
     constructor(){
         super();
         this._state = STATES.CREATED;
