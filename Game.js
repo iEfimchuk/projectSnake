@@ -3,6 +3,41 @@ import Snake from './Snake';
 import Apple from './Apple';
 import Portal from './Portal';
 import GameField from './Gamefield';
+import Controls from './Controls';
+
+// export default class Game extends EventTarget{
+//     constructor(){
+//         super();
+        
+//         if(document.getElementById('game') == undefined){
+//             let gameDiv = document.createElement('div');
+
+//             gameDiv.id = 'game';
+            
+//             gameDivSize = this.getDisplaySize;
+//             gameDiv.style.width = gameDivSize.width;
+//             gameDiv.style.height = gameDivSize.height;
+//         }
+//     }
+
+//     getDisplaySize(defaultWidth, defaultHeight){
+//         documentWidth = document.documentElement.clientWidth;
+//         documentHeight = document.documentElement.clientHeight;
+//         K = documentWidth / documentHeight;
+//         k = 1;
+
+//         if(K > 1){
+//             k = documentHeight > defaultHeight ? 1 : documentHeight / defaultHeight;
+//         } else {
+//             k = documentWidth > defaultWidth ? 1 : documentWidth / defaultWidth;    
+//         }
+
+//         return {
+//             width : defaultWidth * k,
+//             height : defaultHeight * k
+//         }
+//     }
+// }
 
 export default class Game extends Scene{
     constructor(columnsCount, rowsCount){
@@ -11,7 +46,7 @@ export default class Game extends Scene{
         this._state = 'play'; // 'play', 'pause', 'stop'
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
-        this.controls = new EventTarget();
+        this.controls = new Controls();
         this._score = 0;
 
         this.actors = new Array();
@@ -59,7 +94,6 @@ export default class Game extends Scene{
             console.log(`From ${event.detail.prevState} state To ${event.detail.curState} state`);
         });
 
-        document.onkeydown = this.keyPress.bind(this);
         this.actors[0].move();
 
         // setInterval(this.updateState.bind(this), this.tickDuration, this);
@@ -118,38 +152,6 @@ export default class Game extends Scene{
             if(segment.y >= this.gameField.rowsCount){
                 segment.y = 0;
             }
-        }
-    }
-
-    keyPress(event){
-        let eventName = 'Keyboard';
-        let detail = {};
-
-        switch(event.code){
-            case 'ArrowUp':
-            case 'KeyW'     : detail.key = 'Up'; break;
-            case 'ArrowDown': 
-            case 'KeyS'     : detail.key = 'Down'; break;
-            case 'ArrowLeft':
-            case 'KeyA'     : detail.key = 'Left'; break;
-            case 'ArrowRight':
-            case 'KeyD'     : detail.key = 'Right'; break;
-            case 'Digit1'   : detail.key = 'Num1'; break;
-            case 'Digit2'   : detail.key = 'Num2'; break;
-            case 'Digit3'   : detail.key = 'Num3'; break;
-            case 'Digit4'   : detail.key = 'Num4'; break;
-            case 'Digit5'   : detail.key = 'Num5'; break;
-            case 'Digit6'   : detail.key = 'Num6'; break;
-            case 'Digit7'   : detail.key = 'Num7'; break;
-            case 'Digit8'   : detail.key = 'Num8'; break;
-            case 'Digit9'   : detail.key = 'Num9'; break;
-            case 'Digit0'   : detail.key = 'Num0'; break;
-            case 'Escape'   : detail.key = 'Escape'; break;
-            case 'Enter'    : detail.key = 'Enter'; break;
-        }
-
-        if(detail.key != undefined){
-            this.controls.dispatchEvent(new CustomEvent(eventName, {detail: detail}));
         }
     }
 
