@@ -1,29 +1,53 @@
 const STATES = Object({'CREATED': 0, 'EXECUTING': 1, 'PAUSED': 2, 'STOPPED':3});
 
 export default class Scene extends EventTarget{
-    constructor(){
+    constructor(nameID){
         super();
+
+        if(nameID == undefined || nameID == ''){
+            nameID = Date.now().toString();
+        }
+        this._screen = document.createElement('div');
+        this._screen.style.position = 'absolute';
+        this._screen.style.opacity = 0;
+
         this._state = STATES.CREATED;
+        this._id = nameID;
     }
 
     stop(){
-        this.dispatchEvent(new CustomEvent('OnStop', {detail: {oldState: this._state, newState: newValue,}}));
+        this._screen.style.opacity = 0;
         this.state = STATES.STOPPED;
+        this.dispatchEvent(new CustomEvent('OnStop'));
     }
     
-    execute(){
-        this.dispatchEvent(new CustomEvent('OnStart', {detail: {oldState: this._state, newState: newValue,}}));
+    start(){
+        this._screen.style.opacity = 1;
         this.state = STATES.EXECUTING;
+        this.dispatchEvent(new CustomEvent('OnStart'));
     }
 
     pause(){
-        this.dispatchEvent(new CustomEvent('OnStart', {detail: {oldState: this._state, newState: newValue,}}));
+        this._screen.style.opacity = 0;
         this.state = STATES.PAUSED;
+        this.dispatchEvent(new CustomEvent('OnPause'));
+    }
+    
+    reset(){
+        this._screen.style.opacity = 0;
+        this.state = STATES.CREATED;
+        this.dispatchEvent(new CustomEvent('OnReset'));
     }
 
     get state(){
         return this._state;
     }
+
+    get id(){
+        return this._id;
+    }
+
+    onKeyboardEvent(event){}
 
     set state(newValue){
         this.dispatchEvent(new CustomEvent('StateChanging', {detail: {oldState: this._state, newState: newValue,}}));

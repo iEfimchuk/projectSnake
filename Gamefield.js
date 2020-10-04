@@ -1,8 +1,18 @@
 import getRandomIntInclusive from './Math';
 
 export default class GameField extends EventTarget{
-    constructor(columnsCount, rowsCount, visibleSegmentsOnWidthCount, visibleSegmentsOnHeightCount){
+    constructor(columnsCount, rowsCount, visibleAreaWidth, visibleAreaHeight, parentDiv, name){
         super();
+
+        if(name == undefined || name == ''){
+            throw SyntaxError("Parameter 'name' is undefined!");
+        }
+
+        let parent = document.body;
+
+        if(parentDiv != undefined){
+            parent = parentDiv;
+        }
 
         this.segmentWidth = 20;
         this.segmentHeight = 20;
@@ -16,12 +26,38 @@ export default class GameField extends EventTarget{
             maxY : 0
         }
 
-        this.visibleSegmentsOnHeightCount = visibleSegmentsOnHeightCount;
-        this.visibleSegmentsOnWidthCount = visibleSegmentsOnWidthCount;
+        this._visibleAreaWidth = visibleAreaWidth;
+        this._visibleAreaHeight = visibleAreaHeight;
 
-        this.viewPortDiv = document.getElementById('game-field');
-        this.viewPortDiv.style.width = this.segmentWidth*visibleSegmentsOnWidthCount;
-        this.viewPortDiv.style.height = this.segmentHeight*visibleSegmentsOnHeightCount;
+        this._gamefieldDiv = document.getElementById(name);
+
+        if(this._gamefieldDiv == undefined){
+            this._gamefieldDiv = document.createElement('div');
+            this._gamefieldDiv.id = name;
+            parent.appendChild(this._gamefieldDiv);
+        }
+
+        let au = document.createElement('div');
+        au.id = 'arrow-up';
+        au.classList.add('arrow');
+        let ad = document.createElement('div');
+        ad.id = 'arrow-down';
+        ad.classList.add('arrow');
+        let al = document.createElement('div');
+        al.id = 'arrow-left';
+        al.classList.add('arrow');
+        let ar = document.createElement('div');
+        ar.id = 'arrow-right';
+        ar.classList.add('arrow');
+        
+        this._gamefieldDiv.appendChild(au);
+        this._gamefieldDiv.appendChild(ad);
+        this._gamefieldDiv.appendChild(al);
+        this._gamefieldDiv.appendChild(ar);
+
+        this.viewPortDiv = document.getElementById(name);
+        this.viewPortDiv.style.width = this._visibleAreaWidth;
+        this.viewPortDiv.style.height = this._visibleAreaHeight;
         this.viewPortDiv.style.overflow = 'hidden';
 
         this.arrows = {
@@ -163,9 +199,9 @@ export default class GameField extends EventTarget{
         this._visibleArea.x = x;
         this._visibleArea.y = y;
         this._visibleArea.minX = this._visibleArea.x + 4;
-        this._visibleArea.maxX = this._visibleArea.x + (this.visibleSegmentsOnWidthCount - 1) - 4;
+        this._visibleArea.maxX = this._visibleArea.x + (this._visibleAreaWidth/this.segmentWidth - 1) - 4;
         this._visibleArea.minY = this._visibleArea.y + 4;
-        this._visibleArea.maxY = this._visibleArea.y + (this.visibleSegmentsOnHeightCount - 1) - 4;
+        this._visibleArea.maxY = this._visibleArea.y + (this._visibleAreaHeight/this.segmentHeight - 1) - 4;
 
         this.dispatchEvent(new Event('ChangeVisibleArea'));
     }
@@ -190,8 +226,8 @@ export default class GameField extends EventTarget{
             let maxX = this._visibleArea.maxX;
             let maxY = this._visibleArea.maxY;
             let minSCRE = this.minSegmentCountToEdge;
-            let vSOWC = this.visibleSegmentsOnWidthCount;
-            let vSOHC = this.visibleSegmentsOnHeightCount;
+            let vSOWC = this._visibleAreaWidth/this.segmentWidth;
+            let vSOHC = this._visibleAreaHeight/this.segmentHeight;
 
             let x = this._visibleArea.x;
             let y = this._visibleArea.y;

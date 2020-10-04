@@ -10,7 +10,7 @@ body{
 }
 
 #game-field{
-    margin: 20px auto;
+    /* margin: 20px auto; */
     border: 3px solid rgb(0, 224, 0);
     box-shadow: 0 0 3px rgb(0, 224, 0);
 
