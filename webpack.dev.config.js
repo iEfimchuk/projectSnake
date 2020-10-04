@@ -4,5 +4,5 @@ module.exports = {
         path: __dirname + "/scripts/",
         filename: 'index.js'
     },
-    mode: 'production'
+    mode: 'development'
 }
