@@ -21,6 +21,8 @@ export default class Game extends EventTarget{
         }
 
         this._div = document.getElementById('game');
+        this._div.style.marginTop = (document.body.clientHeight - this._div.clientHeight)/2;
+        this._div.style.marginLeft = (document.body.clientWidth - this._div.clientWidth)/2;
 
         this._controls = new Controls();
         this._controls.addEventListener('Keyboard', this.onKeyboardEvent.bind(this));
