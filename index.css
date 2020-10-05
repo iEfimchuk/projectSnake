@@ -3,10 +3,11 @@
     margin: 0;
     padding: 0;
     color: white;
+    box-sizing: border-box;
 }
 
 body{
-    background-color: black;
+    background-color: blue;
 }
 
 #game-field{

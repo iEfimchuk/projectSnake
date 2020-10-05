@@ -15,6 +15,7 @@ export default class Game extends EventTarget{
             let gameDivSize = this.getDisplaySize(480, 640);
             gameDiv.style.width = gameDivSize.width;
             gameDiv.style.height = gameDivSize.height;
+            gameDiv.style.backgroundColor = 'black';
 
             document.body.appendChild(gameDiv);
         }
@@ -62,9 +63,7 @@ export default class Game extends EventTarget{
         this._currentScene.removeEventListener('OnStart', this.onSceneStart.bind(this));
         this._currentScene.removeEventListener('OnPause', this.onScenePause.bind(this));
 
-        this._currentScene.reset();
         this._currentScene = newScene;
-        this._currentScene.score = 50;
         this._currentScene.start();
 
         this._currentScene.addEventListener('StateChanging', this.onSceneStateChanging.bind(this));
@@ -75,10 +74,29 @@ export default class Game extends EventTarget{
 
     onSceneStateChanging(event){}
     onSceneStop(event){
+        let scene = event.target;
+        let sceneId = scene.id;
 
-        this.changeCurrentScene(this._scenes.GameOverScreen);
+        if(sceneId == 'single-player'){
+            let score = scene.score;
+
+            this._scenes.GameOverScreen.reset();
+            this._scenes.GameOverScreen.score = score;
+
+            this.changeCurrentScene(this._scenes.GameOverScreen);
+        }
+
+        if(sceneId == 'game-over-screen'){
+            if(scene.choice == 'retry'){
+                this._scenes.SinglePlayer.reset();
+                this.changeCurrentScene(this._scenes.SinglePlayer);
+            }
+
+            if(scene.choice == 'quit'){
+
+            }
+        }
     }
     onSceneStart(event){}
     onScenePause(event){}
 }
-

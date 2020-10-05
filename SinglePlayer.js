@@ -35,22 +35,6 @@ export default class SinglePlayer extends Scene{
     }
 
     reset(){
-        this._score = 0;GameField
-
-        delete this.actors;
-        this.actors = new Array();
-        this.actors.push(new Snake(this.gameField)); // player
-        this.actors[0].addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
-        this.actors[0].addEventListener('PrevStep', this.gameField.freeSegments.bind(this.gameField));
-        this.actors[0].addEventListener('Step', this.goThroughWalls.bind(this));
-        // this.actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
-        this.actors[0].addEventListener('Step', this.gameField.moveViewPortOnStep.bind(this.gameField));
-        this.actors[0].addEventListener('Step', this.collisionControl.bind(this));
-        this.actors[0].addEventListener('Death', this.stop.bind(this));
-
-        this.actors.push(new Apple(this.gameField));
-        this.actors.push(new Portal(this.gameField));
-
         super.reset();
     }
 
