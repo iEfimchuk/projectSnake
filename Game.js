@@ -30,20 +30,28 @@ export default class Game extends EventTarget{
 
         this._currentScene = undefined;
         
-        let choices = [
+        let choicesGameOver = [
             {name: 'retry', title: 'Retry'},
             {name: 'quit', title: 'Quit'},
         ];
+        
+        let choicesStartScreen = [
+            {name: 'singleplayer', title: 'Single player'},
+            {name: 'settings', title: 'Settings'},
+        ];
 
         this._scenes = {
+            StartScreen : new Menu('start-screen', this._div, Array.from(choicesStartScreen)),
             SinglePlayer : new SinglePlayer(columnsCount, rowsCount, this._div),
             // GameOverScreen : new GameOverScreen(this._div)
-            GameOverScreen : new Menu('game-over', this._div, Array.from(choices))
+            GameOverScreen : new Menu('game-over', this._div, Array.from(choicesGameOver))
         }
 
+        this._scenes.StartScreen.title = 'PrSNAKE';
+        this._scenes.StartScreen.subtitle = '';
         this._scenes.GameOverScreen.title = 'GAME OVER';
 
-        this.changeCurrentScene(this._scenes.SinglePlayer);
+        this.changeCurrentScene(this._scenes.StartScreen);
     };
 
     getDisplaySize(defaultWidth, defaultHeight){
@@ -106,6 +114,17 @@ export default class Game extends EventTarget{
             }
 
             if(scene.choice == 'quit'){
+
+            }
+        }
+
+        if(sceneId == this._scenes.StartScreen.id){
+            if(scene.choice == 'singleplayer'){
+                this._scenes.SinglePlayer.reset();
+                this.changeCurrentScene(this._scenes.SinglePlayer);
+            }
+
+            if(scene.choice == 'settings'){
 
             }
         }
