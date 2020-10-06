@@ -1,7 +1,8 @@
 import SinglePlayer from './SinglePlayer';
 import Controls from './Controls';
-import Scene from './Scene';
-import GameOverScreen from './GameOverScreen';
+// import Scene from './Scene';
+// import GameOverScreen from './GameOverScreen';
+import Menu from './Menu';
 
 export default class Game extends EventTarget{
     constructor(columnsCount, rowsCount){
@@ -27,12 +28,20 @@ export default class Game extends EventTarget{
         this._controls = new Controls();
         this._controls.addEventListener('Keyboard', this.onKeyboardEvent.bind(this));
 
-        this._currentScene = new Scene();
+        this._currentScene = undefined;
         
+        let choices = [
+            {name: 'retry', title: 'Retry'},
+            {name: 'quit', title: 'Quit'},
+        ];
+
         this._scenes = {
             SinglePlayer : new SinglePlayer(columnsCount, rowsCount, this._div),
-            GameOverScreen : new GameOverScreen(this._div)
+            // GameOverScreen : new GameOverScreen(this._div)
+            GameOverScreen : new Menu('game-over', this._div, Array.from(choices))
         }
+
+        this._scenes.GameOverScreen.title = 'GAME OVER';
 
         this.changeCurrentScene(this._scenes.SinglePlayer);
     };
@@ -60,10 +69,12 @@ export default class Game extends EventTarget{
     }
 
     changeCurrentScene(newScene){
-        this._currentScene.removeEventListener('StateChanging', this.onSceneStateChanging.bind(this));
-        this._currentScene.removeEventListener('OnStop', this.onSceneStop.bind(this));
-        this._currentScene.removeEventListener('OnStart', this.onSceneStart.bind(this));
-        this._currentScene.removeEventListener('OnPause', this.onScenePause.bind(this));
+        if(this._currentScene != undefined){
+            this._currentScene.removeEventListener('StateChanging', this.onSceneStateChanging.bind(this));
+            this._currentScene.removeEventListener('OnStop', this.onSceneStop.bind(this));
+            this._currentScene.removeEventListener('OnStart', this.onSceneStart.bind(this));
+            this._currentScene.removeEventListener('OnPause', this.onScenePause.bind(this));
+        }
 
         this._currentScene = newScene;
         this._currentScene.start();
@@ -79,16 +90,16 @@ export default class Game extends EventTarget{
         let scene = event.target;
         let sceneId = scene.id;
 
-        if(sceneId == 'single-player'){
+        if(sceneId == this._scenes.SinglePlayer.id){
             let score = scene.score;
 
             this._scenes.GameOverScreen.reset();
-            this._scenes.GameOverScreen.score = score;
+            this._scenes.GameOverScreen.subtitle = `Score: ${score}`;
 
             this.changeCurrentScene(this._scenes.GameOverScreen);
         }
 
-        if(sceneId == 'game-over-screen'){
+        if(sceneId == this._scenes.GameOverScreen.id){
             if(scene.choice == 'retry'){
                 this._scenes.SinglePlayer.reset();
                 this.changeCurrentScene(this._scenes.SinglePlayer);
