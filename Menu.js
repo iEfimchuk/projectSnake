@@ -17,13 +17,13 @@ export default class Menu extends Scene{
 
         this._screen.innerHTML = 
                                 `<div class="content" style="text-align: center">
-                                    <div class="title" style="margin:0 0 20 0; font-size: 20px"></div>
-                                    <div class="subtitle" style="margin:10 0 10 0; font-size: 17px"></div>
+                                    <div class="title" style="margin:0 0 20 0; font-size: 20px">MENU</div>
+                                    <div class="subtitle" style="margin:10 0 10 0; font-size: 17px">This is menu</div>
                                     ${choices.map(function(element){return `<div class="${element.name} choice" style="padding: 5 0 5 0; font-size: 14px">${element.title}</div>`;}).join('')}
                                 </div>`;
 
         let contentDiv = this._screen.getElementsByClassName('content')[0];
-        contentDiv.style.marginTop = this._screen.clientHeight*0.25;
+        contentDiv.style.marginTop = (this._screen.clientHeight - contentDiv.clientHeight)*0.5;
         contentDiv.style.width = this._screen.clientWidth*0.5;
         contentDiv.style.marginLeft = (this._screen.clientWidth - contentDiv.clientWidth)/2;
 
