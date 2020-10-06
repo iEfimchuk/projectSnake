@@ -6,10 +6,9 @@ import GameField from './Gamefield';
 
 export default class SinglePlayer extends Scene{
     constructor(columnsCount, rowsCount, display){
-        super('single-player');
+        super('single-player', display);
 
         this._screen.id = 'game-field';
-        display.appendChild(this._screen);
         this.gameField = new GameField(columnsCount, rowsCount, display.clientWidth, display.clientHeight, display, 'game-field');
 
         this.maxY = rowsCount - 1;
