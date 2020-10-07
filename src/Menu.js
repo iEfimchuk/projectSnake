@@ -14,6 +14,8 @@ export default class Menu extends Scene{
         this._screen.style.position = 'absolute';
         this._screen.style.width = w;
         this._screen.style.height = h;
+        this._screen.style.border = '3px solid rgb(255, 255, 255)';
+        this._screen.style.boxShadow = '0 0 3px rgb(255, 255, 255)';
 
         this._screen.innerHTML = 
                                 `<div class="content" style="text-align: center">
@@ -64,6 +66,12 @@ export default class Menu extends Scene{
 
     get choice(){
         return this._selectedChoiceName;
+    }
+
+    reset(){
+        super.reset();
+
+        this.choice = this._choices[0].name;
     }
 
     changeChoice(course){
