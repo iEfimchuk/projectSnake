@@ -53,9 +53,11 @@ export default class Game extends EventTarget{
             PauseScreen : new Menu('pause', this._div, Array.from(choicesPauseScreen))
         }
 
-        this._scenes.StartScreen.title = 'PrSNAKE';
+        this._scenes.StartScreen.title = 'Pr. SNAKE';
         this._scenes.StartScreen.subtitle = '';
         this._scenes.GameOverScreen.title = 'GAME OVER';
+        this._scenes.PauseScreen.title = 'PAUSE';
+        this._scenes.PauseScreen.subtitle = '';
 
         this.changeCurrentScene(this._scenes.StartScreen);
     };
