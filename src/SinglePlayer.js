@@ -28,7 +28,7 @@ export default class SinglePlayer extends Scene{
         this.actors[0].addEventListener('Death', this.stop.bind(this));
 
         this.actors.push(new Apple(this.gameField));
-        this.actors.push(new Portal(this.gameField));
+        // this.actors.push(new Portal(this.gameField));
 
         this.actors[0].move();
     }
