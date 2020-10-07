@@ -124,11 +124,11 @@ export default class Snake extends EventTarget{
             let div = curSegment.div;
         
             if(i == 0){
-                div.style.backgroundImage = 'url(images/snakeHead.png)';
+                div.style.backgroundImage = 'url(../images/snakeHead.png)';
                 div.style.zIndex = 1;
 
             } else {
-                div.style.backgroundImage = 'url(images/snakeBody.png)';
+                div.style.backgroundImage = 'url(../images/snakeBody.png)';
                 div.style.zIndex = 0;
             }
 

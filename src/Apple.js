@@ -55,7 +55,7 @@ export default class Apple extends EventTarget{
 
             let div = curSegment.div;
 
-            div.style.backgroundImage = 'url(images/apple.png)';
+            div.style.backgroundImage = 'url(../images/apple.png)';
             div.style.backgroundPosition = 'center';
             div.style.backgroundSize = 'cover';
         }
