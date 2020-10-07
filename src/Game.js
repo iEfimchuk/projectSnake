@@ -122,7 +122,8 @@ export default class Game extends EventTarget{
             }
 
             if(scene.choice == 'quit'){
-
+                this._scenes.StartScreen.reset();
+                this.changeCurrentScene(this._scenes.StartScreen);
             }
         }
 
@@ -133,7 +134,9 @@ export default class Game extends EventTarget{
             }
 
             if(scene.choice == 'settings'){
-
+                alert('В разработке');
+                this._scenes.StartScreen.reset();
+                this.changeCurrentScene(this._scenes.StartScreen);
             }
         }
 
@@ -143,7 +146,8 @@ export default class Game extends EventTarget{
             }
 
             if(scene.choice == 'quit'){
-
+                this._scenes.StartScreen.reset();
+                this.changeCurrentScene(this._scenes.StartScreen);
             }
         }
     }
