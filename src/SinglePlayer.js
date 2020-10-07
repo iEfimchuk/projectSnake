@@ -9,7 +9,9 @@ export default class SinglePlayer extends Scene{
         super('single-player', display);
 
         this._screen.id = 'game-field';
+        this._mainCycleInterval = -1;
         this.gameField = new GameField(columnsCount, rowsCount, display.clientWidth, display.clientHeight, display, 'game-field');
+        this._player = new Snake(this.gameField);
 
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
@@ -17,24 +19,56 @@ export default class SinglePlayer extends Scene{
 
         this.actors = new Array();
 
-        this.actors.push(new Snake(this.gameField)); // player
+        this.actors.push(this._player);
 
-        this.actors[0].addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
-        this.actors[0].addEventListener('PrevStep', this.gameField.freeSegments.bind(this.gameField));
-        this.actors[0].addEventListener('Step', this.goThroughWalls.bind(this));
+        this._player.addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
+        this._player.addEventListener('PrevStep', this.gameField.freeSegments.bind(this.gameField));
+        this._player.addEventListener('Step', this.goThroughWalls.bind(this));
         // this.actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
-        this.actors[0].addEventListener('Step', this.gameField.moveViewPortOnStep.bind(this.gameField));
-        this.actors[0].addEventListener('Step', this.collisionControl.bind(this));
-        this.actors[0].addEventListener('Death', this.stop.bind(this));
+        this._player.addEventListener('Step', this.gameField.moveViewPortOnStep.bind(this.gameField));
+        this._player.addEventListener('Step', this.collisionControl.bind(this));
+        this._player.addEventListener('Death', this.stop.bind(this));
 
         this.actors.push(new Apple(this.gameField));
         // this.actors.push(new Portal(this.gameField));
 
-        this.actors[0].move();
+        // this.actors[0].move();
     }
 
     reset(){
         super.reset();
+    }
+
+    stop(){
+        super.stop();
+        
+        this.stopMainCycle();
+    }
+
+    start(){
+        super.start();
+
+        if(this._mainCycleInterval == -1){
+            this.startMainCycle();
+        }
+    }
+
+    startMainCycle(){
+        this._mainCycleInterval = setInterval(this.mainCycleIteration.bind(this), 200);
+    }
+
+    mainCycleIteration(){
+        if(this._state == 1){
+            this._player.makeStep();
+        }
+    }
+
+    stopMainCycle(){
+        clearInterval(this._mainCycleInterval);
+    }
+
+    pause(){
+        super.pause();
     }
 
     onKeyboardEvent(event){
@@ -48,6 +82,7 @@ export default class SinglePlayer extends Scene{
             case 'Up'   : this.actors[0].changeDirection({x: 0, y: -1}); break;
             case 'Down' : this.actors[0].changeDirection({x: 0, y: 1}); break;
             case 'Num1' : this.actors[0].addSegment(); break;
+            case 'Escape' : this.pause(); break;
         }
     }
 
@@ -113,13 +148,5 @@ export default class SinglePlayer extends Scene{
                 }
             }
         }
-    }
-
-    stop(){
-        super.stop();
-    }
-
-    start(){
-        super.start();
     }
 };
