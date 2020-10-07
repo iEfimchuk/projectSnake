@@ -39,12 +39,18 @@ export default class Game extends EventTarget{
             {name: 'singleplayer', title: 'Single player'},
             {name: 'settings', title: 'Settings'},
         ];
+        
+        let choicesPauseScreen = [
+            {name: 'restart', title: 'Restart'},
+            {name: 'continue', title: 'Continue'},
+            {name: 'quit', title: 'Quit'},
+        ];
 
         this._scenes = {
             StartScreen : new Menu('start-screen', this._div, Array.from(choicesStartScreen)),
             SinglePlayer : new SinglePlayer(columnsCount, rowsCount, this._div),
-            // GameOverScreen : new GameOverScreen(this._div)
-            GameOverScreen : new Menu('game-over', this._div, Array.from(choicesGameOver))
+            GameOverScreen : new Menu('game-over', this._div, Array.from(choicesGameOver)),
+            PauseScreen : new Menu('pause', this._div, Array.from(choicesPauseScreen))
         }
 
         this._scenes.StartScreen.title = 'PrSNAKE';
@@ -128,7 +134,24 @@ export default class Game extends EventTarget{
 
             }
         }
+
+        if(sceneId == this._scenes.PauseScreen.id){
+            if(scene.choice == 'continue'){
+                this.changeCurrentScene(this._scenes.SinglePlayer);
+            }
+
+            if(scene.choice == 'quit'){
+
+            }
+        }
     }
     onSceneStart(event){}
-    onScenePause(event){}
+    onScenePause(event){
+        let scene = event.target;
+        let sceneId = scene.id;
+
+        if(sceneId == this._scenes.SinglePlayer.id){
+            this.changeCurrentScene(this._scenes.PauseScreen);
+        }
+    }
 }
