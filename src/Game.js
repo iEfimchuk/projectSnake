@@ -37,7 +37,7 @@ export default class Game extends EventTarget{
         
         let choicesStartScreen = [
             {name: 'singleplayer', title: 'Single player'},
-            {name: 'settings', title: 'Settings'},
+            // {name: 'settings', title: 'Settings'},
         ];
         
         let choicesPauseScreen = [
