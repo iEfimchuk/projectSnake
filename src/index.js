@@ -1,5 +1,5 @@
 import Game from './Game';
 
 window.onload = function(event){
-    let game = new Game(20, 20);
+    let game = new Game(30, 40);
 }

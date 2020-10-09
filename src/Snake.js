@@ -8,25 +8,25 @@ export default class Snake extends EventTarget{
 
         this.gameField = gameField;
 
-        let newSegment = {x: 0, y: 0, div:null};
+        let newSegment = {x: 0, y: 0, div: document.createElement('div')};
 
         for(let i = 0; i < 3; i++){
             if(gameField.isFreeCell(newSegment)){
                 gameField.takeСell(newSegment);
                 this.body.push(newSegment);
             } else if(gameField.isFreeCell({x:newSegment.x + 1, y: newSegment.y})){
-                newSegment = {x:newSegment.x + 1, y: newSegment.y, div:null};
+                newSegment = {x:newSegment.x + 1, y: newSegment.y, div: document.createElement('div')};
                 gameField.takeСell(newSegment);
                 this.body.push(newSegment);
             } else if(gameField.isFreeCell({x:newSegment.x, y: newSegment.y + 1})){
-                newSegment = {x:newSegment.x, y: newSegment.y + 1, div:null};
+                newSegment = {x:newSegment.x, y: newSegment.y + 1, div: document.createElement('div')};
                 gameField.takeСell(newSegment);
                 this.body.push(newSegment);
             } else {
                 if(newSegment.x + 1 < gameField.maxX){
-                    newSegment = {x: newSegment.x + 1, y: newSegment.y, div:null};
+                    newSegment = {x: newSegment.x + 1, y: newSegment.y, div: document.createElement('div')};
                 } else if(newSegment.y + 1 < gameField.maxY){
-                    newSegment = {x: newSegment.x, y: newSegment + y, div:null};
+                    newSegment = {x: newSegment.x, y: newSegment + y, div: document.createElement('div')};
                 } else {
                     if(this.body.length != 0){
                         break;
@@ -45,7 +45,7 @@ export default class Snake extends EventTarget{
             y: 1
         };
 
-        this.gameField.updateSegments({detail: this.body});
+        // this.gameField.updateSegments({detail: this.body});
     }
 
     get head(){
@@ -69,7 +69,7 @@ export default class Snake extends EventTarget{
     }
 
     addSegment(){
-        this.body.push({x:this.lastPlace.x, y: this.lastPlace.y, div:null});
+        this.body.push({x:this.lastPlace.x, y: this.lastPlace.y, div:document.createElement('div')});
 
         this.dispatchEvent(new CustomEvent('GrowUp', {detail: this.body}));
     }
@@ -92,7 +92,7 @@ export default class Snake extends EventTarget{
 
         this.dispatchEvent(new CustomEvent('Step', {detail: this.body}));
 
-        this.gameField.updateSegments({detail: this.body});
+        // this.gameField.updateSegments({detail: this.body});
 
         this.draw();
     }
@@ -122,7 +122,7 @@ export default class Snake extends EventTarget{
             let curSegment = this.body[i];
 
             let div = curSegment.div;
-        
+
             if(i == 0){
                 div.style.backgroundImage = 'url(../images/snakeHead.png)';
                 div.style.zIndex = 1;

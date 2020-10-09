@@ -19,7 +19,7 @@ export default class Scene extends EventTarget{
         this._screen = document.createElement('div');
         this._screen.style.position = 'absolute';
         this._screen.style.opacity = 0;
-        this._screen.style.boxSizing = 'border-box';
+        // this._screen.style.boxSizing = 'border-box';
 
         this._state = STATES.CREATED;
         this._id = nameID;

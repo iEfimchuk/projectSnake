@@ -1,38 +1,46 @@
 import Scene from './Scene';
 import Snake from './Snake';
 import Apple from './Apple';
-import Portal from './Portal';
-import GameField from './Gamefield';
+import Renderer from './Renderer';
+import GameField from './GameField';
 
 export default class SinglePlayer extends Scene{
     constructor(columnsCount, rowsCount, display){
         super('single-player', display);
 
         this._screen.id = 'game-field';
-        this._mainCycleInterval = -1;
-        this.gameField = new GameField(columnsCount, rowsCount, display.clientWidth, display.clientHeight, display, 'game-field');
-        this._player = new Snake(this.gameField);
+        this._mainCycleIntervalIDID = -1;
+        this._gameField = new GameField(columnsCount, rowsCount);
+        this._renderer = new Renderer(columnsCount, rowsCount, display.clientWidth, display.clientHeight, display, 'game-field', this._gameField);
+        this._player = new Snake(this._gameField);
 
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
         this._score = 0;
 
-        this.actors = new Array();
+        this._actors = new Array();
 
-        this.actors.push(this._player);
+        this._actors.push(this._player);
 
-        this._player.addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
-        this._player.addEventListener('PrevStep', this.gameField.freeSegments.bind(this.gameField));
+        // this._player.addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
+        this._player.addEventListener('GrowUp', this.PlayerOnGrowUp.bind(this));
+        // this._player.addEventListener('PrevStep', this.gameField.freeSegments.bind(this.gameField));
         this._player.addEventListener('Step', this.goThroughWalls.bind(this));
-        // this.actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
-        this._player.addEventListener('Step', this.gameField.moveViewPortOnStep.bind(this.gameField));
-        this._player.addEventListener('Step', this.collisionControl.bind(this));
+        // this._actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
+        this._player.addEventListener('Step', this._renderer.moveViewPortOnStep.bind(this._renderer));
+        // this._player.addEventListener('Step', this.collisionControl.bind(this));
         this._player.addEventListener('Death', this.stop.bind(this));
 
-        this.actors.push(new Apple(this.gameField));
-        // this.actors.push(new Portal(this.gameField));
+        this._actors.push(new Apple(this._gameField));
+        // this._actors.push(new Portal(this.gameField));
 
-        // this.actors[0].move();
+        // this._actors[0].move();
+    }
+
+    PlayerOnGrowUp(event){
+        let body = event.detail;
+
+        this._gameField.refresh(body);
     }
 
     reset(){
@@ -40,31 +48,39 @@ export default class SinglePlayer extends Scene{
     }
 
     stop(){
-        super.stop();
-        
         this.stopMainCycle();
+
+        super.stop();
     }
 
     start(){
-        super.start();
-
-        if(this._mainCycleInterval == -1){
+        if(this._mainCycleIntervalIDID == -1){
             this.startMainCycle();
         }
+
+        super.start();
     }
 
     startMainCycle(){
-        this._mainCycleInterval = setInterval(this.mainCycleIteration.bind(this), 200);
+        this._mainCycleIntervalIDID = setInterval(this.mainCycleIteration.bind(this), 200);
     }
 
     mainCycleIteration(){
         if(this._state == 1){
             this._player.makeStep();
+            this.collisionControl();
+
+            this._actors.forEach((element) => {element.draw();});
+
+            let allSegments = this._actors.map(element => element.body).flat();
+            
+            this._gameField.refresh(allSegments, true);
+            this._renderer.refresh(allSegments, true);
         }
     }
 
     stopMainCycle(){
-        clearInterval(this._mainCycleInterval);
+        clearInterval(this._mainCycleIntervalID);
     }
 
     pause(){
@@ -77,21 +93,17 @@ export default class SinglePlayer extends Scene{
         let key = event.detail.key;
 
         switch(key){
-            case 'Left' : this.actors[0].changeDirection({x: -1, y: 0}); break;
-            case 'Right': this.actors[0].changeDirection({x: 1, y: 0}); break;
-            case 'Up'   : this.actors[0].changeDirection({x: 0, y: -1}); break;
-            case 'Down' : this.actors[0].changeDirection({x: 0, y: 1}); break;
-            case 'Num1' : this.actors[0].addSegment(); break;
+            case 'Left' : this._actors[0].changeDirection({x: -1, y: 0}); break;
+            case 'Right': this._actors[0].changeDirection({x: 1, y: 0}); break;
+            case 'Up'   : this._actors[0].changeDirection({x: 0, y: -1}); break;
+            case 'Down' : this._actors[0].changeDirection({x: 0, y: 1}); break;
+            case 'Num1' : this._actors[0].addSegment(); break;
             case 'Escape' : this.pause(); break;
         }
     }
 
     set score(value){
-        this.dispatchEvent(new CustomEvent({prevValue: this._score, currentValue: value}));
-
         this._score = value;
-
-        // document.getElementById('game-score').innerText = `Score: ${this._score}`;
     }
 
     get score(){
@@ -105,28 +117,28 @@ export default class SinglePlayer extends Scene{
             let segment = segments[segmentIndex];
 
             if(segment.x < 0){
-                segment.x = this.gameField.columnsCount - 1;
+                segment.x = this._gameField.columnsCount - 1;
             }
 
-            if(segment.x >= this.gameField.columnsCount){
+            if(segment.x >= this._gameField.columnsCount){
                 segment.x = 0;
             }
             
             if(segment.y < 0){
-                segment.y = this.gameField.rowsCount - 1;
+                segment.y = this._gameField.rowsCount - 1;
             }
 
-            if(segment.y >= this.gameField.rowsCount){
+            if(segment.y >= this._gameField.rowsCount){
                 segment.y = 0;
             }
         }
     }
 
     collisionControl(){
-        for(let i = 0; i < this.actors.length; i++){
-            for(let e = i; e < this.actors.length; e++){
-                let fActor = this.actors[i];
-                let sActor = this.actors[e];
+        for(let i = 0; i < this._actors.length; i++){
+            for(let e = i; e < this._actors.length; e++){
+                let fActor = this._actors[i];
+                let sActor = this._actors[e];
 
                 function isCollision(fBody, sBody){
                     for(let fi = 0; fi < fBody.length; fi++){
@@ -141,10 +153,8 @@ export default class SinglePlayer extends Scene{
                 }
 
                 if(isCollision(fActor.body, sActor.body)){
-                    console.log();
-
-                    fActor.onCollision(this, sActor);
-                    sActor.onCollision(this, fActor);
+                    fActor.onCollision(this, sActor, this._gameField);
+                    sActor.onCollision(this, fActor, this._gameField);
                 }
             }
         }
