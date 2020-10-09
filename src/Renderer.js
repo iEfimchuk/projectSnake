@@ -1,10 +1,8 @@
 import getRandomIntInclusive from './Mathematic';
 
 export default class Renderer extends EventTarget{
-    constructor(columnsCount, rowsCount, visibleAreaWidth, visibleAreaHeight, parentDiv, name, gameField){
+    constructor(columnsCount, rowsCount, visibleAreaWidth, visibleAreaHeight, viewPortDiv){
         super();
-
-        this._parent = parentDiv;
 
         this._segmentWidth = 20;
         this._segmentHeight = 20;
@@ -14,13 +12,7 @@ export default class Renderer extends EventTarget{
         this._visibleAreaWidth = visibleAreaWidth;
         this._visibleAreaHeight = visibleAreaHeight;
 
-        let gamefieldDiv = document.getElementById(name);
-
-        if(gamefieldDiv == undefined){
-            gamefieldDiv = document.createElement('div');
-            gamefieldDiv.id = name;
-            parent.appendChild(gamefieldDiv);
-        }
+        this._viewPortDiv = viewPortDiv;
 
         let au = document.createElement('div');
         au.id = 'arrow-up';
@@ -35,12 +27,11 @@ export default class Renderer extends EventTarget{
         ar.id = 'arrow-right';
         ar.classList.add('arrow');
         
-        gamefieldDiv.appendChild(au);
-        gamefieldDiv.appendChild(ad);
-        gamefieldDiv.appendChild(al);
-        gamefieldDiv.appendChild(ar);
+        this._viewPortDiv.appendChild(au);
+        this._viewPortDiv.appendChild(ad);
+        this._viewPortDiv.appendChild(al);
+        this._viewPortDiv.appendChild(ar);
 
-        this._viewPortDiv = document.getElementById(name);
         this._viewPortDiv.style.width = this._visibleAreaWidth;
         this._viewPortDiv.style.height = this._visibleAreaHeight;
         this._viewPortDiv.style.overflow = 'hidden';

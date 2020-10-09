@@ -11,7 +11,7 @@ export default class SinglePlayer extends Scene{
         this._screen.id = 'game-field';
         this._mainCycleIntervalIDID = -1;
         this._gameField = new GameField(columnsCount, rowsCount);
-        this._renderer = new Renderer(columnsCount, rowsCount, display.clientWidth, display.clientHeight, display, 'game-field', this._gameField);
+        this._renderer = new Renderer(columnsCount, rowsCount, display.clientWidth, display.clientHeight, this._screen);
         this._player = new Snake(this._gameField);
 
         this.maxY = rowsCount - 1;
