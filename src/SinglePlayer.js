@@ -44,6 +44,20 @@ export default class SinglePlayer extends Scene{
     }
 
     reset(){
+        this._gameField.refresh([], true);
+        this._renderer.refresh([], true);
+
+        this._player = new Snake(this._gameField);
+        this._score = 0;
+        this._actors = new Array();
+        this._actors.push(this._player);
+        this._player.addEventListener('GrowUp', this.PlayerOnGrowUp.bind(this));
+        this._player.addEventListener('Step', this.goThroughWalls.bind(this));
+        this._player.addEventListener('Step', this._renderer.moveViewPortOnStep.bind(this._renderer));
+        this._player.addEventListener('Death', this.stop.bind(this));
+
+        this._actors.push(new Apple(this._gameField));
+
         super.reset();
     }
 

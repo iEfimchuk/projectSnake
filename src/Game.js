@@ -134,7 +134,6 @@ export default class Game extends EventTarget{
             }
 
             if(scene.choice == 'settings'){
-                alert('В разработке');
                 this._scenes.StartScreen.reset();
                 this.changeCurrentScene(this._scenes.StartScreen);
             }
@@ -142,6 +141,11 @@ export default class Game extends EventTarget{
 
         if(sceneId == this._scenes.PauseScreen.id){
             if(scene.choice == 'continue'){
+                this.changeCurrentScene(this._scenes.SinglePlayer);
+            }
+
+            if(scene.choice == 'restart'){
+                this._scenes.SinglePlayer.reset();
                 this.changeCurrentScene(this._scenes.SinglePlayer);
             }
 
