@@ -48,7 +48,7 @@ export default class Renderer extends EventTarget{
         this._fieldDiv.style.border = '1px solid rgb(0, 224, 0)';
         this._fieldDiv.style.boxShadow = '0 0 10px rgb(0, 224, 0)';
         this._fieldDiv.style.webkitBoxShadow = '0 0 10px rgb(0, 224, 0)';
-        this._fieldDiv.style['-webkit-transition'] = 'all 0.2s ease-out';
+        this._fieldDiv.style['-webkit-transition'] = 'all 0.3s ease-out';
         this._viewPortDiv.append(this._fieldDiv);
 
         this._fieldDiv.style.width = columnsCount*this._segmentWidth;

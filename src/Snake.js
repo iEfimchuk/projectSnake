@@ -1,7 +1,8 @@
-export default class Snake extends EventTarget{
+import Actor from './Actor';
+
+export default class Snake extends Actor{
     constructor(gameField){
         super();
-        this.body = new Array();
         this.lastPlace = {x:0, y:0};
         this.millisecondsPerStep = 200;
         this.alive = true;
@@ -13,22 +14,22 @@ export default class Snake extends EventTarget{
         for(let i = 0; i < 3; i++){
             if(gameField.isFreeCell(newSegment)){
                 gameField.takeСell(newSegment);
-                this.body.push(newSegment);
+                this._body.push(newSegment);
             } else if(gameField.isFreeCell({x:newSegment.x + 1, y: newSegment.y})){
                 newSegment = {x:newSegment.x + 1, y: newSegment.y, div: document.createElement('div')};
                 gameField.takeСell(newSegment);
-                this.body.push(newSegment);
+                this._body.push(newSegment);
             } else if(gameField.isFreeCell({x:newSegment.x, y: newSegment.y + 1})){
                 newSegment = {x:newSegment.x, y: newSegment.y + 1, div: document.createElement('div')};
                 gameField.takeСell(newSegment);
-                this.body.push(newSegment);
+                this._body.push(newSegment);
             } else {
                 if(newSegment.x + 1 < gameField.maxX){
                     newSegment = {x: newSegment.x + 1, y: newSegment.y, div: document.createElement('div')};
                 } else if(newSegment.y + 1 < gameField.maxY){
                     newSegment = {x: newSegment.x, y: newSegment + y, div: document.createElement('div')};
                 } else {
-                    if(this.body.length != 0){
+                    if(this._body.length != 0){
                         break;
                     }
                 }
@@ -39,17 +40,17 @@ export default class Snake extends EventTarget{
         }
 
         this.direction = {
-            // x: this.body[0].x - this.body[1].x, 
-            // y: this.body[0].y - this.body[1].y
+            // x: this._body[0].x - this._body[1].x, 
+            // y: this._body[0].y - this._body[1].y
             x: 0, 
             y: 1
         };
 
-        // this.gameField.updateSegments({detail: this.body});
+        // this.gameField.updateSegments({detail: this._body});
     }
 
     get head(){
-        return this.body[0];
+        return this._body[0];
     }
 
     kill(){
@@ -69,37 +70,37 @@ export default class Snake extends EventTarget{
     }
 
     addSegment(){
-        this.body.push({x:this.lastPlace.x, y: this.lastPlace.y, div:document.createElement('div')});
+        this._body.push({x:this.lastPlace.x, y: this.lastPlace.y, div:document.createElement('div')});
 
-        this.dispatchEvent(new CustomEvent('GrowUp', {detail: this.body}));
+        this.dispatchEvent(new CustomEvent('GrowUp', {detail: this._body}));
     }
 
     makeStep(){
-        this.dispatchEvent(new CustomEvent('PrevStep', {detail: this.body}));
+        this.dispatchEvent(new CustomEvent('PrevStep', {detail: this._body}));
 
-        this.lastPlace.x = this.body[this.body.length - 1].x;
-        this.lastPlace.y = this.body[this.body.length - 1].y;
+        this.lastPlace.x = this._body[this._body.length - 1].x;
+        this.lastPlace.y = this._body[this._body.length - 1].y;
 
-        for(let i = this.body.length - 1; i > 0; i--){
-            let curSegment = this.body[i];
-            let prevSergment = this.body[i - 1];
+        for(let i = this._body.length - 1; i > 0; i--){
+            let curSegment = this._body[i];
+            let prevSergment = this._body[i - 1];
             curSegment.x = prevSergment.x;
             curSegment.y = prevSergment.y;
         }
 
-        this.body[0].x += this.direction.x;
-        this.body[0].y += this.direction.y;
+        this._body[0].x += this.direction.x;
+        this._body[0].y += this.direction.y;
 
-        this.dispatchEvent(new CustomEvent('Step', {detail: this.body}));
+        this.dispatchEvent(new CustomEvent('Step', {detail: this._body}));
 
-        // this.gameField.updateSegments({detail: this.body});
+        // this.gameField.updateSegments({detail: this._body});
 
         this.draw();
     }
     
     changeDirection(newDirection){
-        let firstSegment = this.body[0];
-        let secondSegment = this.body[1];
+        let firstSegment = this._body[0];
+        let secondSegment = this._body[1];
 
         if(firstSegment.x + newDirection.x == secondSegment.x ||
             firstSegment.y + newDirection.y == secondSegment.y){
@@ -117,9 +118,11 @@ export default class Snake extends EventTarget{
     }
 
     draw(){
-        for(let i = this.body.length - 1; i >= 0; i--){
+        super.draw();
 
-            let curSegment = this.body[i];
+        for(let i = this._body.length - 1; i >= 0; i--){
+
+            let curSegment = this._body[i];
 
             let div = curSegment.div;
 
@@ -140,8 +143,8 @@ export default class Snake extends EventTarget{
     onCollision(game, actor){
         if(actor instanceof Snake){
             if(this === actor){
-                for(let i = 1; i < this.body.length; i++){
-                    if(this.body[0].x == this.body[i].x && this.body[0].y == this.body[i].y){
+                for(let i = 1; i < this._body.length; i++){
+                    if(this._body[0].x == this._body[i].x && this._body[0].y == this._body[i].y){
                         this.kill();
                     }
                 }

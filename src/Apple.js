@@ -1,16 +1,15 @@
-import getRandomIntInclusive from './Mathematic';
 import Snake from './Snake';
+import Actor from './Actor';
 
-export default class Apple extends EventTarget{
+export default class Apple extends Actor{
     constructor(gameField){
         super();
-        this.body = [];
 
         let freeCell = gameField.getFreeCell();
 
         freeCell.div = null;
 
-        this.body.push({x: freeCell.x, y: freeCell.y, div: document.createElement('div')});
+        this._body.push({x: freeCell.x, y: freeCell.y, div: document.createElement('div')});
 
         this.draw();
     }
@@ -22,18 +21,19 @@ export default class Apple extends EventTarget{
 
             let freeCell = gameField.getFreeCell();
 
-            this.body[0].x = freeCell.x;
-            this.body[0].y = freeCell.y;
+            this._body[0].x = freeCell.x;
+            this._body[0].y = freeCell.y;
         }
         
-        // this.gameField.updateSegments({detail: this.body});
+        // this.gameField.updateSegments({detail: this._body});
     }
 
     draw(){
+        super.draw();
 
-        for(let i = 0; i < this.body.length; i++){
+        for(let i = 0; i < this._body.length; i++){
 
-            let curSegment = this.body[i];
+            let curSegment = this._body[i];
 
             let div = curSegment.div;
 

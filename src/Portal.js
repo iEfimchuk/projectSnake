@@ -48,16 +48,8 @@ export default class Portal extends EventTarget{
                                             {once : true})
                     this.clearBody();
                     break;
-                    
-                    // actor.body[0].x = this.body[(i + 1)%2].x;
-                    // actor.body[0].y = this.body[(i + 1)%2].y;
-                    // this.clearBody();
-                    // setTimeout(this.resetBody.bind(this), getRandomIntInclusive(1000, 10000));
-                    // break;
                 }
             }
-            // this.clearBody();
-            // setTimeout(this.resetBody.bind(this), getRandomIntInclusive(1000, 10000));
         }
     }
 
@@ -70,9 +62,6 @@ export default class Portal extends EventTarget{
         };        
 
         snake.addEventListener('Step', this.goThroughThePortal.bind(this, snake), {once:true})
-
-        // this.clearBody();
-        // setTimeout(this.resetBody.bind(this), getRandomIntInclusive(1000, 10000));
     }
 
     goThroughThePortal(snake, x, y){
