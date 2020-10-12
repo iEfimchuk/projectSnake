@@ -2,11 +2,12 @@
   "name": "projectsnake",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./html/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dbuild": "webpack --config webpack.dev.config.js",
-    "build" : "webpack"
+    "build": "webpack",
+    "nw": "node_modules/.bin/nw"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,16 @@
   "devDependencies": {
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
+  },
+  "window": {
+    "toolbar": false,
+    "frame": false,
+    "as_desktop": true,
+    "resizable": false,
+    "fullscreen": true
+  },
+  "dependencies": {
+    "nw": "^0.49.0",
+    "nwjs-builder-phoenix": "^1.15.0"
   }
 }
