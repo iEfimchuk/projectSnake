@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dbuild": "webpack --config webpack.dev.config.js",
     "build": "webpack",
-    "nw": "node_modules/.bin/nw"
+    "nw": "node_modules/.bin/nw",
+    "electron": "electron electron.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/efimchuk/projectsnake#readme",
   "devDependencies": {
+    "electron": "^10.1.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
   },
