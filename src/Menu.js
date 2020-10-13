@@ -14,11 +14,11 @@ export default class Menu extends Scene{
         this._screen.style.position = 'absolute';
         this._screen.style.width = w;
         this._screen.style.height = h;
-        this._screen.style.border = '3px solid rgb(255, 255, 255)';
-        this._screen.style.boxShadow = '0 0 3px rgb(255, 255, 255)';
+        this._screen.style.border = '3px solid rgb(224, 224, 192)';
+        this._screen.style.boxShadow = '0 0 3px rgb(224, 224, 192)';
 
         this._screen.innerHTML = 
-                                `<div class="content" style="text-align: center">
+                                `<div class="content" style="text-align: center; color: rgb(224, 224, 192)">
                                     <div class="title" style="margin:0 0 20 0; font-size: 20px">MENU</div>
                                     <div class="subtitle" style="margin:10 0 10 0; font-size: 17px">This is menu</div>
                                     ${choices.map(function(element){return `<div class="${element.name} choice" style="padding: 5 0 5 0; font-size: 14px">${element.title}</div>`;}).join('')}
@@ -46,12 +46,12 @@ export default class Menu extends Scene{
 
     set choice(newValue){
         Array.from(this._screen.getElementsByClassName('choice')).forEach(function(element){
-            element.style.color = 'white';
+            element.style.color = 'rgb(224, 224, 192)';
             element.style.backgroundColor = 'black';
         });
 
         this._screen.getElementsByClassName(newValue)[0].style.color = 'black';
-        this._screen.getElementsByClassName(newValue)[0].style.backgroundColor = 'white';
+        this._screen.getElementsByClassName(newValue)[0].style.backgroundColor = 'rgb(224, 224, 192)';
 
         this._selectedChoiceName = newValue;
     }
