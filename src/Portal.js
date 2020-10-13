@@ -15,9 +15,9 @@ export default class Portal extends Actor{
         if(cssElement == undefined){
             cssElement = document.createElement('style');
         }
-        
-        cssElement.innerText = `@keyframes ${this._className1}_ {from {background-color:rgb(224, 96, 0); transform: scale(1.1, 1.1);} to {background-color:rgb(64, 64, 192); transform: scale(0.9, 0.9);}}`+
-        `@keyframes ${this._className0}_ {from {background-color:rgb(64, 64, 192); transform: scale(0.9, 0.9);} to {background-color:rgb(224, 96, 0); transform: scale(1.1, 1.1);}}`+
+
+        cssElement.innerText = `@keyframes ${this._className1}_ {from {background-color:rgb(224, 96, 0); transform: scale(1.0, 1.0);} to {background-color:rgb(64, 64, 192); transform: scale(0.8, 0.8);}}`+
+        `@keyframes ${this._className0}_ {from {background-color:rgb(64, 64, 192); transform: scale(0.8, 0.8);} to {background-color:rgb(224, 96, 0); transform: scale(1.0, 1.0);}}`+
         `.${this._className1}{animation-name:${this._className1}_; animation-duration:1s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate-reverse; animation-play-state: running; animation-fill-mode: none; box-sizing: border-box;}`+
         `.${this._className0}{animation-name:${this._className0}_; animation-duration:1s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate-reverse; animation-play-state: running; animation-fill-mode: none; box-sizing: border-box;}`;
         document.head.appendChild(cssElement);

@@ -30,10 +30,8 @@ export default class Apple extends Actor{
             let curSegment = this._body[i];
 
             let div = curSegment.div;
-
-            div.style.backgroundImage = 'url(../images/apple.png)';
-            div.style.backgroundPosition = 'center';
-            div.style.backgroundSize = 'cover';
+            div.style.backgroundColor = 'rgb(224, 32, 0)';
+            div.style.transform = 'scale(0.70) rotate(45deg)';
         }
     }
 }
