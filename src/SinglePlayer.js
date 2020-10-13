@@ -8,7 +8,6 @@ export default class SinglePlayer extends Scene{
     constructor(columnsCount, rowsCount, display){
         super('single-player', display);
 
-        this._screen.id = 'game-field';
         this._mainCycleIntervalIDID = -1;
         this._gameField = new GameField(columnsCount, rowsCount);
         this._renderer = new Renderer(columnsCount, rowsCount, display.clientWidth, display.clientHeight, this._screen);
