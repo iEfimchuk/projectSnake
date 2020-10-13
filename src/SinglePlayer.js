@@ -63,12 +63,17 @@ export default class SinglePlayer extends Scene{
     }
 
     reset(){
+        this._actors.forEach(function(element){element.destroy();});
+
         this._gameField.refresh([], true);
         this._renderer.refresh([], true);
-        
+
+        delete this._player;
         let freeCell = this._gameField.getFreeCell();
         this._gameField.takeСell(freeCell);
         this._player = new Snake([freeCell]);
+
+        delete this._actors;
         
         this.score = 0;
         
@@ -78,14 +83,14 @@ export default class SinglePlayer extends Scene{
         this._player.addEventListener('Step', this.goThroughWalls.bind(this));
         this._player.addEventListener('Step', this._renderer.moveViewPortOnStep.bind(this._renderer));
         this._player.addEventListener('Death', this.stop.bind(this));
-
-        freeCell = this._gameField.getFreeCell();
-        this._gameField.takeСell(freeCell);
-        this._actors.push(new Apple([freeCell]));        
         
         let freeCells = [this._gameField.getFreeCell(), this._gameField.getFreeCell()];
         freeCells.forEach(function(element){this.takeСell(element)}, this._gameField);        
         this._actors.push(new Portal(freeCells));
+
+        freeCell = this._gameField.getFreeCell();
+        this._gameField.takeСell(freeCell);
+        this._actors.push(new Apple([freeCell])); 
 
         super.reset();
     }
@@ -118,7 +123,7 @@ export default class SinglePlayer extends Scene{
             let allSegments = this._actors.map(element => element.body).flat();
             
             this._gameField.refresh(allSegments, true);
-            this._renderer.refresh(allSegments, true);
+            this._renderer.refresh(allSegments, false);
         }
     }
 

@@ -95,8 +95,10 @@ export default class Renderer extends EventTarget{
             div.style.left = segment.x*this._segmentWidth;
             div.style.top = segment.y*this._segmentHeight;
             div.style.transformOrigin = 'center center';
-
-            this._fieldDiv.appendChild(segment.div);
+            
+            if(!this._fieldDiv.contains(segment.div)){
+                this._fieldDiv.appendChild(segment.div);
+            }
         }
     }
 
@@ -104,7 +106,8 @@ export default class Renderer extends EventTarget{
         let childList = this._fieldDiv.childNodes;
 
         for(let i = 0; i < childList.length; i++){
-            this._fieldDiv.removeChild(childList[i]);
+            childList[i].remove();
+            // this._fieldDiv.removeChild(childList[i]);
         }
     }
 
