@@ -22,7 +22,21 @@ export default class SinglePlayer extends Scene{
 
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
-        this._score = 0;
+        
+        this._score = {
+            value: 0,
+            div : document.createElement('div')
+        };
+        this._score.div = document.createElement('div');
+        // this._score.div.innerText = `${this._score.value}`;
+        this._score.div.style.zIndex = 2;
+        this._score.div.style.position = 'absolute';
+        this._score.div.style.left = 0;
+        this._score.div.style.top = 0;
+        this._score.div.style.color = 'rgba(224, 192, 128, 0.8)';
+        this._score.div.style.padding = '10px';
+        this._screen.appendChild(this._score.div);
+        this.score = 0;
 
         this._actors = new Array();
 
@@ -56,7 +70,8 @@ export default class SinglePlayer extends Scene{
         this._gameField.takeСell(freeCell);
         this._player = new Snake([freeCell]);
         
-        this._score = 0;
+        this.score = 0;
+        
         this._actors = new Array();
         this._actors.push(this._player);
         this._player.addEventListener('GrowUp', this.PlayerOnGrowUp.bind(this));
@@ -131,11 +146,12 @@ export default class SinglePlayer extends Scene{
     }
 
     set score(value){
-        this._score = value;
+        this._score.value = value;
+        this._score.div.innerText = `Score: ${this._score.value}`;
     }
 
     get score(){
-        return this._score;
+        return this._score.value;
     }
 
     goThroughWalls(event){
