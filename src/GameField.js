@@ -21,6 +21,8 @@ export default class GameField{
         this._field = matrix(columnsCount, rowsCount, true);
 
         this._freeCells = new Array();
+
+        this.refresh([], true);
     }
 
     get columnsCount(){

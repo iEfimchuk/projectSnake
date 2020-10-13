@@ -2,14 +2,10 @@ import Snake from './Snake';
 import Actor from './Actor';
 
 export default class Apple extends Actor{
-    constructor(gameField){
+    constructor(body){
         super();
 
-        let freeCell = gameField.getFreeCell();
-
-        freeCell.div = null;
-
-        this._body.push({x: freeCell.x, y: freeCell.y, div: document.createElement('div')});
+        this._body.push({x: body[0].x, y: body[0].y, div: document.createElement('div')});
 
         this.draw();
     }
@@ -24,8 +20,6 @@ export default class Apple extends Actor{
             this._body[0].x = freeCell.x;
             this._body[0].y = freeCell.y;
         }
-        
-        // this.gameField.updateSegments({detail: this._body});
     }
 
     draw(){

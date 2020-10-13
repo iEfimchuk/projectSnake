@@ -3,15 +3,22 @@ import Snake from './Snake';
 import Apple from './Apple';
 import Renderer from './Renderer';
 import GameField from './GameField';
+import Portal from './Portal';
 
 export default class SinglePlayer extends Scene{
     constructor(columnsCount, rowsCount, display){
         super('single-player', display);
 
+        this._screen.style.border = '3px solid rgb(0, 224, 0)';
+        this._screen.style.boxShadow = '0 0 3px rgb(0, 224, 0)';
+
         this._mainCycleIntervalIDID = -1;
         this._gameField = new GameField(columnsCount, rowsCount);
         this._renderer = new Renderer(columnsCount, rowsCount, display.clientWidth, display.clientHeight, this._screen);
-        this._player = new Snake(this._gameField);
+        
+        let freeCell = this._gameField.getFreeCell();
+        this._gameField.takeСell(freeCell);
+        this._player = new Snake([freeCell]);
 
         this.maxY = rowsCount - 1;
         this.maxX = columnsCount - 1;
@@ -21,19 +28,18 @@ export default class SinglePlayer extends Scene{
 
         this._actors.push(this._player);
 
-        // this._player.addEventListener('GrowUp', this.gameField.addSegment.bind(this.gameField));
         this._player.addEventListener('GrowUp', this.PlayerOnGrowUp.bind(this));
-        // this._player.addEventListener('PrevStep', this.gameField.freeSegments.bind(this.gameField));
         this._player.addEventListener('Step', this.goThroughWalls.bind(this));
-        // this._actors[0].addEventListener('Step', this.gameField.updateSegments.bind(this.gameField));
         this._player.addEventListener('Step', this._renderer.moveViewPortOnStep.bind(this._renderer));
-        // this._player.addEventListener('Step', this.collisionControl.bind(this));
         this._player.addEventListener('Death', this.stop.bind(this));
 
-        this._actors.push(new Apple(this._gameField));
-        // this._actors.push(new Portal(this.gameField));
+        freeCell = this._gameField.getFreeCell();
+        this._gameField.takeСell(freeCell);
+        this._actors.push(new Apple([freeCell]));
 
-        // this._actors[0].move();
+        let freeCells = [this._gameField.getFreeCell(), this._gameField.getFreeCell()];
+        freeCells.forEach(function(element){this.takeСell(element)}, this._gameField);        
+        this._actors.push(new Portal(freeCells));
     }
 
     PlayerOnGrowUp(event){
@@ -45,8 +51,11 @@ export default class SinglePlayer extends Scene{
     reset(){
         this._gameField.refresh([], true);
         this._renderer.refresh([], true);
-
-        this._player = new Snake(this._gameField);
+        
+        let freeCell = this._gameField.getFreeCell();
+        this._gameField.takeСell(freeCell);
+        this._player = new Snake([freeCell]);
+        
         this._score = 0;
         this._actors = new Array();
         this._actors.push(this._player);
@@ -55,7 +64,13 @@ export default class SinglePlayer extends Scene{
         this._player.addEventListener('Step', this._renderer.moveViewPortOnStep.bind(this._renderer));
         this._player.addEventListener('Death', this.stop.bind(this));
 
-        this._actors.push(new Apple(this._gameField));
+        freeCell = this._gameField.getFreeCell();
+        this._gameField.takeСell(freeCell);
+        this._actors.push(new Apple([freeCell]));        
+        
+        let freeCells = [this._gameField.getFreeCell(), this._gameField.getFreeCell()];
+        freeCells.forEach(function(element){this.takeСell(element)}, this._gameField);        
+        this._actors.push(new Portal(freeCells));
 
         super.reset();
     }
@@ -75,7 +90,7 @@ export default class SinglePlayer extends Scene{
     }
 
     startMainCycle(){
-        this._mainCycleIntervalIDID = setInterval(this.mainCycleIteration.bind(this), 200);
+        this._mainCycleIntervalIDID = setInterval(this.mainCycleIteration.bind(this), 100);
     }
 
     mainCycleIteration(){
